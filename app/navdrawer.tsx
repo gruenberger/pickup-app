@@ -3,15 +3,19 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
-import Button from '@mui/material/Button';
 import List from '@mui/material/List';
-import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import MapIcon from '@mui/icons-material/Map';
+import EventIcon from '@mui/icons-material/Event';
+import PersonIcon from '@mui/icons-material/Person';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
@@ -39,6 +43,31 @@ export default function Navdrawer() {
   
         setState({ ...state, [anchor]: open });
       };
+
+      const getListIcon =
+      (index: number) => {
+        switch (index) {
+          case 0:
+            //Map
+            return <MapIcon />;
+            break;
+          case 1:
+            // Create Event
+            return <EventIcon />;
+            break;
+          case 2:
+            // Profile
+            return <PersonIcon />;
+            break;
+          case 3:
+            // Account Settings
+            return <SettingsIcon />;
+            break;
+          default:
+            // This is an error state
+            return <p>Menu did not load correctly.</p>;
+        }
+      }
     
       const list = (anchor: Anchor) => (
         <Box
@@ -48,24 +77,11 @@ export default function Navdrawer() {
           onKeyDown={toggleDrawer(anchor, false)}
         >
           <List>
-            {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+            {['Map', 'Create Event', 'Profile', 'Settings'].map((text, index) => (
               <ListItem key={text} disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
-                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                  </ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-          <Divider />
-          <List>
-            {['All mail', 'Trash', 'Spam'].map((text, index) => (
-              <ListItem key={text} disablePadding>
-                <ListItemButton>
-                  <ListItemIcon>
-                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                    {getListIcon(index)}
                   </ListItemIcon>
                   <ListItemText primary={text} />
                 </ListItemButton>
@@ -77,9 +93,16 @@ export default function Navdrawer() {
     
 
     return(
-        <div>
-      
-          <Button onClick={toggleDrawer('left', true)}>LEFT</Button>
+        <div>      
+          <IconButton 
+            onClick={toggleDrawer('left', true)}
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            sx={{ mr: 2 }}>
+              <MenuIcon />
+          </IconButton>
           <Drawer
             anchor={'left'}
             open={state['left']}
