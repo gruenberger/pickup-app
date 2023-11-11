@@ -8,17 +8,22 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import MapIcon from '@mui/icons-material/Map';
 import EventIcon from '@mui/icons-material/Event';
 import PersonIcon from '@mui/icons-material/Person';
 import SettingsIcon from '@mui/icons-material/Settings';
+import Link from 'next/link';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
+const LINKS = [
+  {href: 'map', icon: <MapIcon />, text: 'Map'},
+  {href: 'create-event', icon: <EventIcon />, text: 'Create Event'},
+  {href: 'profile', icon: <PersonIcon />, text: 'Profile'},
+  {href: 'settings', icon: <SettingsIcon />, text: 'Settings'}
+]
 
 
 
@@ -43,31 +48,6 @@ export default function Navdrawer() {
   
         setState({ ...state, [anchor]: open });
       };
-
-      const getListIcon =
-      (index: number) => {
-        switch (index) {
-          case 0:
-            //Map
-            return <MapIcon />;
-            break;
-          case 1:
-            // Create Event
-            return <EventIcon />;
-            break;
-          case 2:
-            // Profile
-            return <PersonIcon />;
-            break;
-          case 3:
-            // Account Settings
-            return <SettingsIcon />;
-            break;
-          default:
-            // This is an error state
-            return <p>Menu did not load correctly.</p>;
-        }
-      }
     
       const list = (anchor: Anchor) => (
         <Box
@@ -77,11 +57,11 @@ export default function Navdrawer() {
           onKeyDown={toggleDrawer(anchor, false)}
         >
           <List>
-            {['Map', 'Create Event', 'Profile', 'Settings'].map((text, index) => (
+            {LINKS.map(({ href, icon, text}) => (
               <ListItem key={text} disablePadding>
-                <ListItemButton>
+                <ListItemButton component={Link} href={href}>
                   <ListItemIcon>
-                    {getListIcon(index)}
+                    {icon}
                   </ListItemIcon>
                   <ListItemText primary={text} />
                 </ListItemButton>
