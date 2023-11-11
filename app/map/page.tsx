@@ -1,3 +1,5 @@
+"use client";
+
 import { Wrapper } from "@googlemaps/react-wrapper";
 import React,{ useEffect, useRef } from "react";
 
@@ -15,11 +17,16 @@ function MapComponent(){
         });
     });
 
-    return <div ref={ref} id="map"/>;
+    return <div ref={ref} id="map" style={{ width: "1000px" , height: "700px" }}/>;
 };
 
 
 
-export default function TheMap() {
-    return (<Wrapper apiKey=""><MapComponent/></Wrapper>)
+export default function PickupsMap() {
+
+    let apiKey: string = process.env.NEXT_PUBLIC_GMAPS_API_KEY ?? "";
+
+
+
+    return (<Wrapper apiKey={apiKey}><MapComponent/></Wrapper>)
 }
