@@ -5,13 +5,13 @@ import React,{ useEffect, useRef } from "react";
 
 
 function MapComponent(){
-    const ref = useRef<HTMLDivElement | null>(null);
-    let center: google.maps.LatLngLiteral = {lat: -34.397, lng: 150.644};
-    let zoom: number = 4;
+    const ref = React.useRef<HTMLDivElement>(null);
+    let center: google.maps.LatLngLiteral = {lat: 39, lng: -76};
+    let zoom: number = 100;
 
 
     useEffect(() => {
-        new window.google.maps.Map(ref.current, {
+        new window.google.maps.Map(ref.current as HTMLElement, {
             center,
             zoom 
         });
@@ -24,8 +24,9 @@ function MapComponent(){
 
 export default function PickupsMap() {
 
-    let apiKey: string = process.env.NEXT_PUBLIC_GMAPS_API_KEY ?? "";
 
+    let apiKey: string = process.env.NEXT_PUBLIC_GMAPS_API_KEY ?? "";
+    console.log(apiKey);
 
 
     return (<Wrapper apiKey={apiKey}><MapComponent/></Wrapper>)
