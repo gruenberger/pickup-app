@@ -5,6 +5,7 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import Navbar from './navbar';
+import AuthProvider from './AuthProvider';
 
 export const metadata: Metadata = {
   title: 'Pickup App',
@@ -17,11 +18,13 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body >
-        <Navbar />
-        {children}
-      </body>
-    </html>
+    <AuthProvider>
+      <html lang="en">
+        <body >
+          <Navbar />
+          {children}
+        </body>
+      </html>
+    </AuthProvider>
   )
 }

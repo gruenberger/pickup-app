@@ -6,6 +6,8 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 
 import Navdrawer from './navdrawer';
+import { SignInButton, SignOutButton } from '@/ui/buttons';
+import AuthCheck from '@/ui/AuthCheck';
 
 export default function Navbar() {
     return (
@@ -16,7 +18,10 @@ export default function Navbar() {
                 <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                 Pickup App
                 </Typography>
-                <Button color="inherit">Login</Button>
+                <SignInButton />
+                <AuthCheck>
+                    <SignOutButton />
+                </AuthCheck>
             </Toolbar>
         </AppBar>
     </Box>
