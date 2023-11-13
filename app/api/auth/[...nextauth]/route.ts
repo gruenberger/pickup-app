@@ -18,8 +18,7 @@ const authOptions: NextAuthOptions = {
             clientId: process.env.DISCORD_ID!,
             clientSecret: process.env.DISCORD_SECRET!
         })
-    ],
-    secret: process.env.AUTH_SECRET
+    ]
 };
 
 const handler = NextAuth(authOptions);
