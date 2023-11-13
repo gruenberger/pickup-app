@@ -1,9 +1,7 @@
 'use client';
 
 import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
 import { signIn, signOut, useSession } from "next-auth/react";
-import Link from "next/link";
 import { AccountCircle } from "@mui/icons-material";
 import { Button } from "@mui/material";
 // import Image from "next/image";
