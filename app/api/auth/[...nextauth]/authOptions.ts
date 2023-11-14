@@ -6,7 +6,7 @@ import DiscordProvider from "next-auth/providers/discord";
 
 const prisma = new PrismaClient();
 
-export const options: NextAuthOptions = {
+export const authOptions: NextAuthOptions = {
     adapter: PrismaAdapter(prisma),
     providers: [
         GoogleProvider({
@@ -15,7 +15,8 @@ export const options: NextAuthOptions = {
         }),
         DiscordProvider({
             clientId: process.env.DISCORD_ID!,
-            clientSecret: process.env.DISCORD_SECRET!
+            clientSecret: process.env.DISCORD_SECRET!,
+            authorization: {params: {scope: 'identify email'}},
         })
     ]
 };
