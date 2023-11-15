@@ -7,6 +7,9 @@ import { Loader } from '@googlemaps/js-api-loader';
 type LatLng = google.maps.LatLngLiteral;
 
 
+    
+
+
     function MapComponent(){
     
     const ref = React.useRef<HTMLDivElement>(null);
@@ -16,7 +19,7 @@ type LatLng = google.maps.LatLngLiteral;
     const [center, setCenter] = useState<LatLng>(defaultLoc);
 
 
-
+    
 
     useEffect( () => {
         // this is probably stupid
@@ -44,11 +47,40 @@ type LatLng = google.maps.LatLngLiteral;
 
         });
 
+        map.data.addGeoJson(createGeoJson);
+        
+
         
     });
 
     return <div ref={ref} id="map" style={{ width: "1000px" , height: "700px" }}/>;
 };
+
+
+function createGeoJson() {
+    let featureCollection: object = {
+        type: "FeatureCollection",
+        features: [
+            {
+                type: "Feature",
+                properties: {
+                    gametype: "Soccer/futbol"
+                 },
+                 geometry: {
+                    type: "Point",
+                    coordinates: [39.31688221917615, -76.63160667440947]
+                 }
+            }
+
+
+        ]
+    }
+
+
+
+    return featureCollection;
+}
+
 
 function success(setCenter: React.Dispatch<React.SetStateAction<google.maps.LatLngLiteral>>){
 
