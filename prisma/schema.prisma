@@ -36,6 +36,7 @@ model Location {
   lat     Float
   lon     Float
   Event   Event[]
+  User    User[]
 }
 
 // Next Auth required models
@@ -72,7 +73,7 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
-  friends  Int[]   @default([])
+  friends  String[]   @default([])
   city     String? @db.VarChar(255)
   state    String? @db.VarChar(255)
   country  String? @db.VarChar(50)
@@ -81,6 +82,8 @@ model User {
   accounts      Account[]
   sessions      Session[]
   events    Event[]
+  homeLocation Int
+  Location Location @relation(fields: [homeLocation], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "location_fkey")
 }
 
 model VerificationToken {
