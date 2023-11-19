@@ -16,7 +16,9 @@ type LatLng = google.maps.LatLngLiteral;
     let defaultLoc: google.maps.LatLngLiteral = {lat: 39, lng: -76};
     let zoom: number = 16;
 
-    const [center, setCenter] = useState<LatLng>(defaultLoc);
+   // const center = defaultLoc;
+
+   const [center, setCenter] = useState<LatLng>(defaultLoc);
 
 
     
@@ -36,7 +38,7 @@ type LatLng = google.maps.LatLngLiteral;
         })
 
 
-        loader.importLibrary("marker").then( markerLibrary => {
+        /* loader.importLibrary("marker").then( markerLibrary => {
             const marker = new markerLibrary.AdvancedMarkerElement({
                 map: map,
                 position: center,
@@ -45,10 +47,25 @@ type LatLng = google.maps.LatLngLiteral;
         }).catch((e) => {
             console.log(e);
 
-        });
+        }); */
 
-        map.data.addGeoJson(createGeoJson);
+        var text = createGeoJson();
+        console.log(text);
+
+        var object = JSON.parse(text);
+        console.log(object);
+        map.data.addGeoJson(object);
+
         
+       /*  map.data.setStyle(feature => {
+            var title: string = feature.getProperty("gametype") as string || "";
+            
+
+            return {
+                clickable: true,
+                title: "THIS IS A TITLE"
+            };
+        }); */
 
         
     });
@@ -58,27 +75,38 @@ type LatLng = google.maps.LatLngLiteral;
 
 
 function createGeoJson() {
-    let featureCollection: object = {
-        type: "FeatureCollection",
-        features: [
-            {
-                type: "Feature",
-                properties: {
-                    gametype: "Soccer/futbol"
-                 },
-                 geometry: {
-                    type: "Point",
-                    coordinates: [39.31688221917615, -76.63160667440947]
-                 }
-            }
+   // let featureCollection: object = {
+   //     type: "FeatureCollection",
+     //   features: [
+       //     {
+//
+         //   }
+   // }
+/* 
+   {
+    type: "Feature",
+    properties: {
+        gametype: "Soccer/futbol"
+     },
+     geometry: {
+        type: "Point",
+        coordinates: []
+     }
+} */
 
-
-        ]
+    let feature = {
+        type: "Feature",
+        properties: {
+            gametype: "soccer"
+        },
+        geometry: {
+            type: "Point",
+            coordinates: [39.320268087226395, -76.63230180172269]
+            
+        }
     }
 
-
-
-    return featureCollection;
+    return JSON.stringify(feature);
 }
 
 
@@ -95,6 +123,7 @@ function success(setCenter: React.Dispatch<React.SetStateAction<google.maps.LatL
 
 }
 
+export const MemoMapComponent = React.memo(MapComponent); 
 
 
 export default function PickupsMap() {
@@ -104,5 +133,5 @@ export default function PickupsMap() {
     console.log(apiKey);
 
 
-    return (<Wrapper apiKey={apiKey}><MapComponent/></Wrapper>)
+    return (<Wrapper apiKey={apiKey}><MemoMapComponent/></Wrapper>)
 }
