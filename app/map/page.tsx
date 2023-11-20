@@ -4,7 +4,10 @@ import { Wrapper } from "@googlemaps/react-wrapper";
 import React,{ useEffect, useRef, useState } from "react";
 import { Loader } from '@googlemaps/js-api-loader';
 
-type LatLng = google.maps.LatLngLiteral;
+    type LatLng = google.maps.LatLngLiteral;
+
+    const geoLoc = 0;
+
 
 
     function MapComponent(){
@@ -15,12 +18,18 @@ type LatLng = google.maps.LatLngLiteral;
 
     const [center, setCenter] = useState<LatLng>(defaultLoc);
 
+    const [loadCount, setLoadCount] = useState(0);
+
 
 
 
     useEffect( () => {
+    
         // this is probably stupid
-        navigator.geolocation.getCurrentPosition(success(setCenter), null , { enableHighAccuracy: true});
+        navigator.geolocation.getCurrentPosition(success(setCenter), null );
+       // setLoadCount(loadCount+1);
+       // console.log('count:',loadCount);
+
 
         const map = new window.google.maps.Map(ref.current as HTMLElement, {
             center,
@@ -28,12 +37,13 @@ type LatLng = google.maps.LatLngLiteral;
             mapId: "id" 
         });
 
-        const loader = new Loader({
+
+       /*  const loader = new Loader({
             apiKey: process.env.NEXT_PUBLIC_GMAPS_API_KEY ?? "",
         })
+ */
 
-
-        loader.importLibrary("marker").then( markerLibrary => {
+       /*  loader.importLibrary("marker").then( markerLibrary => {
             const marker = new markerLibrary.AdvancedMarkerElement({
                 map: map,
                 position: center,
@@ -42,15 +52,20 @@ type LatLng = google.maps.LatLngLiteral;
         }).catch((e) => {
             console.log(e);
 
-        });
+        }); */
 
         
-    });
+    },[ref]);
 
-    return <div ref={ref} id="map" style={{ width: "1000px" , height: "700px" }}/>;
+    return <div ref={ref} id="map" style={{ width: "1000px" , height: "700px" }}>
+        <p>{loadCount}</p>
+    </div>;
 };
 
 function success(setCenter: React.Dispatch<React.SetStateAction<google.maps.LatLngLiteral>>){
+
+    geoLoc+1;
+    console.log('geoloc', geoLoc);
 
     return (position: GeolocationPosition) => {
         const latitude = position.coords.latitude;
