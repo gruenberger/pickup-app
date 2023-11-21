@@ -1,49 +1,49 @@
 "use client";
 
-import { Wrapper } from "@googlemaps/react-wrapper";
-import React,{ useEffect, useRef, useState } from "react";
+import { Wrapper, Status } from "@googlemaps/react-wrapper";
+import React,{ ReactElement, useEffect, useRef, useState } from "react";
 import { Loader } from '@googlemaps/js-api-loader';
 
     type LatLng = google.maps.LatLngLiteral;
 
-    const geoLoc = 0;
-
-
-
-    function MapComponent(){
-    
+function MapComponent(){
     const ref = React.useRef<HTMLDivElement>(null);
-    let defaultLoc: google.maps.LatLngLiteral = {lat: 39, lng: -76};
+    const mapRef = React.useRef<google.maps.Map>(null);
+    
+    let defaultLoc: google.maps.LatLngLiteral = {lat: 90, lng: 0};
     let zoom: number = 16;
 
-    const [center, setCenter] = useState<LatLng>(defaultLoc);
-
-    const [loadCount, setLoadCount] = useState(0);
+    const [center, setCenter] = useState<LatLng>(defaultLoc); 
 
 
+
+   
 
 
     useEffect( () => {
-    
-        // this is probably stupid
+        
         navigator.geolocation.getCurrentPosition(success(setCenter), null );
-       // setLoadCount(loadCount+1);
-       // console.log('count:',loadCount);
+        let map: google.maps.Map | null = null;
+
+        if(mapRef.current == null){
+            map = new window.google.maps.Map(ref.current as HTMLElement, {
+                center,
+                zoom,
+                mapId: "id" });
+        }else{
+            console.log('mapRef.current not null', mapRef.current)
+            map = mapRef.current;
+            map.setCenter(center);
+        }
 
 
-        const map = new window.google.maps.Map(ref.current as HTMLElement, {
-            center,
-            zoom,
-            mapId: "id" 
-        });
 
-
-       /*  const loader = new Loader({
+       
+        const loader = new Loader({
             apiKey: process.env.NEXT_PUBLIC_GMAPS_API_KEY ?? "",
         })
- */
 
-       /*  loader.importLibrary("marker").then( markerLibrary => {
+        loader.importLibrary("marker").then( markerLibrary => {
             const marker = new markerLibrary.AdvancedMarkerElement({
                 map: map,
                 position: center,
@@ -52,30 +52,36 @@ import { Loader } from '@googlemaps/js-api-loader';
         }).catch((e) => {
             console.log(e);
 
-        }); */
-
+        });
         
-    },[ref]);
+    });
 
-    return <div ref={ref} id="map" style={{ width: "1000px" , height: "700px" }}>
-        <p>{loadCount}</p>
+
+        return <div ref={ref} id="map" style={{ width: "1000px" , height: "700px" }}>
     </div>;
+
 };
 
 function success(setCenter: React.Dispatch<React.SetStateAction<google.maps.LatLngLiteral>>){
-
-    geoLoc+1;
-    console.log('geoloc', geoLoc);
 
     return (position: GeolocationPosition) => {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
 
         const loc: LatLng = {lat: latitude, lng: longitude};
-
+        console.log('location', loc);
         setCenter(loc);
     };
 
+}
+
+
+const render = (status: Status):ReactElement => {
+    if(status == Status.LOADING ||
+        status == Status.FAILURE
+        ) return <h3>{status} ..</h3>
+
+    return <></>
 }
 
 
@@ -87,5 +93,5 @@ export default function PickupsMap() {
     console.log(apiKey);
 
 
-    return (<Wrapper apiKey={apiKey}><MapComponent/></Wrapper>)
+    return (<Wrapper apiKey={apiKey} render={render}><MapComponent/></Wrapper>)
 }
