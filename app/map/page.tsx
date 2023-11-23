@@ -16,7 +16,6 @@ const render = (status: Status):ReactElement => {
 }
 
 
-
 export default function PickupsMap() {
 
     let apiKey: string = process.env.NEXT_PUBLIC_GMAPS_API_KEY ?? "";
@@ -31,9 +30,9 @@ export default function PickupsMap() {
                     lat: position.coords.latitude,
                     lng: position.coords.longitude
                 })
-            }, null);
+            });
         setGames(getGamesFromDb);
-    })
+    },[])
 
     return (<Wrapper apiKey={apiKey} render={render}>
         <MapComponent center={center} zoom={zoom} games={games}/>
