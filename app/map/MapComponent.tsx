@@ -11,7 +11,6 @@ export function MapComponent({ center, zoom, games }: { center: LatLng, zoom: nu
 
     useEffect(() => {
 
-        // navigator.geolocation.getCurrentPosition(success(setCenter), null);
         const map = new window.google.maps.Map(ref.current as HTMLElement, {
             center,
             zoom,
@@ -51,16 +50,4 @@ export function MapComponent({ center, zoom, games }: { center: LatLng, zoom: nu
     return <div ref={ref} id="map" style={{ width: "1000px", height: "700px" }}>
     </div>;
 
-} export function success(setCenter: React.Dispatch<React.SetStateAction<google.maps.LatLngLiteral>>) {
-
-    return (position: GeolocationPosition) => {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-
-        const loc: LatLng = { lat: latitude, lng: longitude };
-        console.log('location', loc);
-        setCenter(loc);
-    };
-
-}
-
+} 
