@@ -1,13 +1,12 @@
-import Image from 'next/image'
-import styles from './page.module.css'
 import * as React from 'react';
-import Button from '@mui/material/Button';
-import PickupsMap from './map/page';
+import { getServerSession } from 'next-auth';
+import { authOptions } from './api/auth/[...nextauth]/authOptions';
 
-export default function Home() {
-  return (
-    <main className={styles.main}>
-      <PickupsMap/> 
-    </main>
-  )
+export default async function Home() {
+  const session = await getServerSession(authOptions);
+  if(session){
+    <h2>Hello, {session?.user?.name}. Welcome to Pickup App.</h2>
+  } else{
+    return <h2>Welcome to Pickup App.</h2>
+  }
 }
