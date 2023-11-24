@@ -8,6 +8,14 @@ async function main() {
   console.log(allUsers);
 }
 
+async function getEvents(){
+
+  const allEvents = await prisma.event.findMany();
+  return allEvents;
+}
+
+
+
 main()
   .then(async () => {
     await prisma.$disconnect()
@@ -17,3 +25,5 @@ main()
     await prisma.$disconnect()
     process.exit(1)
   })
+
+
