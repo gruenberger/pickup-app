@@ -32,11 +32,11 @@ model Event {
 
 
 model Location {
-  id      Int    @id(map: "location_pkey") @default(autoincrement())
+  id      Int   @id(map: "location_pkey") @default(autoincrement())
   lat     Float
   lon     Float
+  type    String
   Event   Event[]
-  User    User[]
 }
 
 // Next Auth required models
@@ -82,9 +82,8 @@ model User {
   accounts      Account[]
   sessions      Session[]
   events    Event[]
-  homeLocation Int
-  Location Location @relation(fields: [homeLocation], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "location_fkey")
-}
+  homeCenter Float[] @default([39.2654073,-76.5139326])
+  }
 
 model VerificationToken {
   identifier String
