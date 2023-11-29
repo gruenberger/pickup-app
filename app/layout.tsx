@@ -27,11 +27,15 @@ export default async function RootLayout({
       <html lang="en">
         <body >
           <SessionProvider session={session}>
-            <Navbar />
             <Box sx={{ flexGrow: 1 }}>
-            <Grid container spacing={2}>
-            {children}
-            </Grid>
+              <Grid container spacing={2}>
+                <Grid xs={12} >
+                  <Navbar />
+                </Grid>
+                <Grid xs={12}>    
+                  {children}
+                </Grid>
+              </Grid>
             </Box>
           </SessionProvider>
         </body>
