@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { Event, PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
@@ -17,3 +17,11 @@ main()
     await prisma.$disconnect()
     process.exit(1)
   })
+
+  async function saveEvent(event: Event){
+      prisma.event.create({
+        data: event
+      });
+  }
+
+  export {saveEvent}

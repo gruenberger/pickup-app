@@ -11,6 +11,9 @@ import dayjs, { Dayjs } from 'dayjs';
 import isLeapYear from 'dayjs/plugin/isLeapYear';
 
 import 'dayjs/locale/en'; // import locale
+import { Event } from '@prisma/client';
+import { Description } from '@mui/icons-material';
+import { saveEvent}  from '../lib/db'; 
 
 dayjs.extend(isLeapYear) // use plugin
 dayjs.locale('en') // use locale
@@ -69,6 +72,24 @@ export default function EventForm({ user }: any) {
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
         console.log(formData);
+        //create event
+        let e: Event = {
+            id: 0,
+            name: formData.name,
+            description: formData.description,
+            // why is location a number drew ?
+            location: 0,
+            // where is the user information
+            owner: 'bje301@gmail.com',
+            activity: 'basketball',
+            attendance: [1],
+            createdAt: new Date(),
+            startTime: formData.startTime.toDate(),
+            endTime: formData.endTime.toDate()
+        }
+
+        saveEvent(e);
+
     };
 
     return (
@@ -92,7 +113,7 @@ export default function EventForm({ user }: any) {
         <TextField
             label="Location"
             name="location"
-            value={JSON.stringify(formData.location)}
+            value={formData.location}
             onChange={handleLocationChange}
             fullWidth
             required
