@@ -5,8 +5,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 
 import Navdrawer from './navdrawer';
-import AuthButton from '@/app/ui/AuthButton';
-import Link from 'next/link';
+import AuthButton from '@/ui/AuthButton';
 import Button from '@mui/material/Button';
 
 export default function Navbar() {
