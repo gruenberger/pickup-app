@@ -1,19 +1,19 @@
 import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient()
+export const db = new PrismaClient()
 
 async function main() {
   // ... you will write your Prisma Client queries here
-  const allUsers = await prisma.user.findMany();
-  console.log(allUsers);
+  //const allUsers = await db.user.findMany();
+  //console.log(allUsers);
 }
 
 main()
   .then(async () => {
-    await prisma.$disconnect()
+    await db.$disconnect()
   })
   .catch(async (e) => {
     console.error(e)
-    await prisma.$disconnect()
+    await db.$disconnect()
     process.exit(1)
   })
