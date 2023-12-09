@@ -1,52 +1,108 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+// Material UI imports
+import { Box, CircularProgress, Grid, MenuItem, Paper, Typography } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker';
 import { renderTimeViewClock } from '@mui/x-date-pickers/timeViewRenderers';
+
+// Until I have a better way, MUI-X DateTimePicker
 import dayjs, { Dayjs } from 'dayjs';
 import isLeapYear from 'dayjs/plugin/isLeapYear';
 
 import 'dayjs/locale/en'; // import locale
 import type { User } from '@prisma/client';
 
-import { Grid, Paper, Stack } from '@mui/material';
-import { MapComponent } from '@/app/map/MapComponent';
+// Action to handle Prisma database call
 import { createEvent } from './createEventAction';
 
 // Map Stuff
-import {createRoot} from 'react-dom/client';
-import {APIProvider, Map} from '@vis.gl/react-google-maps';
+import { useGeolocated } from "react-geolocated";
+import {APIProvider, Map, AdvancedMarker, Pin, InfoWindow} from '@vis.gl/react-google-maps';
 
 dayjs.extend(isLeapYear) // use plugin
 dayjs.locale('en') // use locale
 
 // Should mimick db Event Model
-interface EventFormData {
+interface CreateEventFormData {
   name: string;
   description: string;
-  //location: google.maps.LatLngLiteral;
-  location: string;
+  activity: Activity;
+  lat: number;
+  lng: number;
   startTime: Dayjs;
   endTime: Dayjs;
 }
 
 // Passes in db model of User from parent
 interface EventFormProps {
-    user: User
+    user: User;
 }
+
+// Activity Interface
+interface Activity {
+    name: string;
+    value: string;
+}
+
+// Activities
+const activities: Activity[] = [
+    {name: "Soccer", value: "soccer"},
+    {name: "Basketball", value: "basketball"},
+    {name: "Football", value: "football"},
+    {name: "Baseball", value: "baseball"},
+    {name: "Volleyball", value: "volleyball"},
+    {name: "Lacrosse", value: "lacrosse"},
+    {name: "Ultimate Frisbee", value: "ultimatefrisbee"},
+    {name: "Skateboarding", value: "skateboarding"},
+    {name: "Running", value: "running"},
+    {name: "Tennis", value: "tennis"},
+    {name: "Cricket", value: "cricket"},
+    {name: "Field Hockey", value: "fieldhockey"},
+    {name: "Badminton", value: "badminton"},
+    {name: "Table Tennis", value: "tabletennis"},
+    {name: "Chess", value: "chess"},
+    {name: "Checkers", value: "checkers"},
+    {name: "Magic The Gathering", value: "magic"},
+    {name: "Warhammer", value: "warhammer"},
+    {name: "Video Game (See Desc)", value: "videogame"},
+    {name: "Other (See Desc)", value: "other"},
+];
 
 
 export default function EventForm({ user }: EventFormProps) {
+    const { coords,
+            isGeolocationAvailable,
+            isGeolocationEnabled,
+            getPosition,
+            positionError,
+         } =
+        useGeolocated({
+            positionOptions: {
+                enableHighAccuracy: false,
+            },
+            userDecisionTimeout: 5000,
+            watchLocationPermissionChange: true,
+            watchPosition: true
+        });
+    console.log(`COORDS: ${coords}`);
+    // User location first gathered through the browser
+    // Eventually, the user can alter the location through
+    // The google map.
+    const [lat, setLat] = useState(null);
+    const [lng, setLng] = useState(null);
     
-    const [formData, setFormData] = useState<EventFormData>({
-        name: '',
+    
+    const [formData, setFormData] = useState<CreateEventFormData>({
+        name: `${user.name}'s Fun Game `,
         description: '',
-       // location: { lat: 0, lng: 0 },
-       location: "1.000,1.000",
+        activity: {name:'Soccer', value:'soccer'},
+        lat: coords?.latitude ?? 70.634908,
+        lng: coords?.longitude ?? 23.688498,
         startTime: dayjs(new Date()),
         endTime: dayjs(new Date()),
     });
@@ -93,9 +149,9 @@ export default function EventForm({ user }: EventFormProps) {
             description: formData.description,
             lat: 0,
             lng: 0,
-            owner: 'bje301@gmail.com',
+            owner: user.id,
             activity: 'basketball',
-            attendance: [1],
+            attendance: [],
             createdAt: new Date(),
             startTime: formData.startTime.toDate(),
             endTime: formData.endTime.toDate()
@@ -104,38 +160,88 @@ export default function EventForm({ user }: EventFormProps) {
         createEvent(newEvent);
 
     };
-
-    return (
-        <form onSubmit={handleSubmit}>
-        <Grid container spacing={2}>
-            
-            <Grid item xs={6}>
+    if (!isGeolocationAvailable || !isGeolocationEnabled){
+        return <Typography variant="h2">
+                It would be great if you would enable location!
+                </Typography>;
+    }else if(coords){
+        return (            
+        <Grid container  spacing={2}>            
+            <Grid container item xs={6}>
+                <Paper sx={{flexGrow: 1}} elevation={6}>
+                <Grid item xs={12}>
                     <TextField
                         label="Name"
                         name="name"
+                        variant="standard"
                         value={formData.name}
                         onChange={handleInputChange}
-                        fullWidth
+                        margin="normal"
+                        helperText="Name your activity"
                         required
                     />
+                </Grid>
+                <Grid item xs={12}>
+                    <TextField
+                        id="activitySelect"
+                        name="activity"
+                        variant="standard"
+                        select
+                        margin="normal"
+                        onChange={handleInputChange}
+                        required
+                        label="Activity"
+                        helperText="Please select the activity"
+                        
+                    >
+                        {activities.map((option) => (
+                            <MenuItem key={option.value} value={option.value}>
+                            {option.name}
+                            </MenuItem>
+                        ))}
+                    </TextField>
+                </Grid>
+                <Grid item xs={12}>
                     <TextField
                         label="Description"
                         name="description"
+                        variant="standard"
+                        helperText="Describe the activity with a few details"
                         value={formData.description}
                         onChange={handleInputChange}
                         fullWidth
                         required
+                        margin="normal"
                     />
+                </Grid>
+                <Grid item xs={12}>
                     <TextField
-                        label="Location"
-                        name="location"
-                        value={formData.location}
+                        label="Latitude"
+                        name="lat"
+                        type="number"
+                        variant="standard"
+                        helperText="Latitude of the activity location"
+                        value={38.2}
                         onChange={handleLocationChange}
                         fullWidth
                         required
+                        margin="normal"
                     />
-                
+                    <TextField
+                        label="Longitude"
+                        name="lng"
+                        type="number"
+                        variant="standard"
+                        helperText="Longitude of the activity location"
+                        value={-6.3}
+                        onChange={handleLocationChange}
+                        fullWidth
+                        required
+                        margin="normal"
+                    />
+                </Grid>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <Grid item xs={12}>
                     <MobileDateTimePicker
                         label="Start Time"
                         value={formData.startTime}
@@ -148,38 +254,53 @@ export default function EventForm({ user }: EventFormProps) {
                             seconds: null,
                         }}                 
                     />
+                </Grid>
+                <Grid item xs={12}>
                     <MobileDateTimePicker
-                    label="End Time"
-                    value={formData.endTime}
-                    disablePast
-                    formatDensity='spacious'
-                    onChange={(date) => handleDateTimeChange('endTime', date)}
-                    viewRenderers={{
-                        hours: renderTimeViewClock,
-                        minutes: renderTimeViewClock,
-                        seconds: null,
-                    }}
+                        label="End Time"
+                        value={formData.endTime}
+                        disablePast
+                        formatDensity='spacious'
+                        onChange={(date) => handleDateTimeChange('endTime', date)}
+                        viewRenderers={{
+                            hours: renderTimeViewClock,
+                            minutes: renderTimeViewClock,
+                            seconds: null,
+                        }}
                     />
+                </Grid>
                 </LocalizationProvider>
-                <Button type="submit" variant="contained" color="primary">
-                    Create Event
-                </Button>
-            </Grid>
+                    <Grid item xs={12}>
+                        <Button onClick={handleSubmit} variant="contained" color="primary">
+                            Create Event
+                        </Button>
+                    </Grid>
+                </Paper>
+            </Grid>            
+            
             <Grid item xs={6}>
                 <Paper elevation={6}>
                 <APIProvider apiKey={process.env.NEXT_PUBLIC_GMAPS_API_KEY as string}>
                     <div style={{height: '100vh', width: '100%'}}>
-                    <Map
-                    zoom={6}
-                    center={{lat: 22.54992, lng: 0}}
-                    />
+                    <Map zoom={15} center={{lat:coords?.latitude as number, lng:coords?.longitude as number}} 
+                        mapId={process.env.NEXT_PUBLIC_GMAPS_MAP_ID}>
+                        <AdvancedMarker position={{lat:coords?.latitude as number, lng:coords?.longitude as number}}>
+                            <Pin />
+                        </AdvancedMarker>
+                    </Map>
                     </div>
                 </APIProvider>
                 </Paper>
             </Grid>
             
-        </Grid>
-        </form>
-    );
+        </Grid>            
+        );
+    } else {
+        return (
+            <Box sx={{ display: 'flex' }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
     
 }

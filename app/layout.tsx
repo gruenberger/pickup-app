@@ -25,9 +25,9 @@ export default async function RootLayout({
   const session = await getServerSession(authOptions);
   return (
       <html lang="en">
-        <body >
+        <body style={{backgroundColor:"#F3F6F9" }}>
           <SessionProvider session={session}>
-            <Box sx={{ flexGrow: 1 }}>
+            <Box sx={{ flexGrow: 1}}>
               <Grid container spacing={2}>
                 <Grid xs={12} >
                   <Navbar />
