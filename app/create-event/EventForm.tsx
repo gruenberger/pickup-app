@@ -87,22 +87,22 @@ export default function EventForm({ user }: EventFormProps) {
             },
             userDecisionTimeout: 5000,
             watchLocationPermissionChange: true,
-            watchPosition: true
+            watchPosition: true,
         });
-    console.log(`COORDS: ${coords}`);
+    console.log(`COORDS: ${coords?.latitude}, ${coords?.longitude}`);
     // User location first gathered through the browser
     // Eventually, the user can alter the location through
     // The google map.
-    const [lat, setLat] = useState(null);
-    const [lng, setLng] = useState(null);
+    const [latLng, setLatLng] = 
+        useState<google.maps.LatLngLiteral>();
     
     
     const [formData, setFormData] = useState<CreateEventFormData>({
         name: `${user.name}'s Fun Game `,
         description: '',
         activity: {name:'Soccer', value:'soccer'},
-        lat: coords?.latitude ?? 70.634908,
-        lng: coords?.longitude ?? 23.688498,
+        lat: latLng ? latLng.lat :70.634908,
+        lng: latLng ? latLng.lng : 23.688498,
         startTime: dayjs(new Date()),
         endTime: dayjs(new Date()),
     });
@@ -117,17 +117,7 @@ export default function EventForm({ user }: EventFormProps) {
         }));
     };
 
-    const handleLocationChange = (
-        event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-    ) => {
-        // Assuming the input value is a stringified JSON representation of google.maps.LatLngLiteral
-        //const location = JSON.parse(event.target.value);
-        const location = event.target.value;
-        setFormData((prevData) => ({
-        ...prevData,
-        location,
-        }));
-    };
+    
 
     const handleDateTimeChange = (field: 'startTime' | 'endTime', date: Dayjs | null) => {
         if (date) {
@@ -138,6 +128,10 @@ export default function EventForm({ user }: EventFormProps) {
         }
     };
 
+    const handleMapClick = (event: any) => {
+        setLatLng(event.detail.latLng);
+    }
+
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
         console.log(formData);
@@ -147,8 +141,8 @@ export default function EventForm({ user }: EventFormProps) {
             //id:Date.now(),
             name: formData.name,
             description: formData.description,
-            lat: 0,
-            lng: 0,
+            lat: latLng?.lat,
+            lng: latLng?.lng,
             owner: user.id,
             activity: 'basketball',
             attendance: [],
@@ -160,147 +154,141 @@ export default function EventForm({ user }: EventFormProps) {
         createEvent(newEvent);
 
     };
-    if (!isGeolocationAvailable || !isGeolocationEnabled){
-        return <Typography variant="h2">
-                It would be great if you would enable location!
-                </Typography>;
-    }else if(coords){
-        return (            
-        <Grid container  spacing={2}>            
-            <Grid container item xs={6}>
-                <Paper sx={{flexGrow: 1}} elevation={6}>
-                <Grid item xs={12}>
-                    <TextField
-                        label="Name"
-                        name="name"
-                        variant="standard"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        margin="normal"
-                        helperText="Name your activity"
-                        required
-                    />
-                </Grid>
-                <Grid item xs={12}>
-                    <TextField
-                        id="activitySelect"
-                        name="activity"
-                        variant="standard"
-                        select
-                        margin="normal"
-                        onChange={handleInputChange}
-                        required
-                        label="Activity"
-                        helperText="Please select the activity"
-                        
-                    >
-                        {activities.map((option) => (
-                            <MenuItem key={option.value} value={option.value}>
-                            {option.name}
-                            </MenuItem>
-                        ))}
-                    </TextField>
-                </Grid>
-                <Grid item xs={12}>
-                    <TextField
-                        label="Description"
-                        name="description"
-                        variant="standard"
-                        helperText="Describe the activity with a few details"
-                        value={formData.description}
-                        onChange={handleInputChange}
-                        fullWidth
-                        required
-                        margin="normal"
-                    />
-                </Grid>
-                <Grid item xs={12}>
-                    <TextField
-                        label="Latitude"
-                        name="lat"
-                        type="number"
-                        variant="standard"
-                        helperText="Latitude of the activity location"
-                        value={38.2}
-                        onChange={handleLocationChange}
-                        fullWidth
-                        required
-                        margin="normal"
-                    />
-                    <TextField
-                        label="Longitude"
-                        name="lng"
-                        type="number"
-                        variant="standard"
-                        helperText="Longitude of the activity location"
-                        value={-6.3}
-                        onChange={handleLocationChange}
-                        fullWidth
-                        required
-                        margin="normal"
-                    />
-                </Grid>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <Grid item xs={12}>
-                    <MobileDateTimePicker
-                        label="Start Time"
-                        value={formData.startTime}
-                        disablePast
-                        formatDensity='spacious'
-                        onChange={(date) => handleDateTimeChange('startTime', date)}
-                        viewRenderers={{
-                            hours: renderTimeViewClock,
-                            minutes: renderTimeViewClock,
-                            seconds: null,
-                        }}                 
-                    />
-                </Grid>
-                <Grid item xs={12}>
-                    <MobileDateTimePicker
-                        label="End Time"
-                        value={formData.endTime}
-                        disablePast
-                        formatDensity='spacious'
-                        onChange={(date) => handleDateTimeChange('endTime', date)}
-                        viewRenderers={{
-                            hours: renderTimeViewClock,
-                            minutes: renderTimeViewClock,
-                            seconds: null,
-                        }}
-                    />
-                </Grid>
-                </LocalizationProvider>
+
+    return (!isGeolocationAvailable || !isGeolocationEnabled) ? (
+            <Typography variant="h3">
+                Please enable location!
+            </Typography>
+            ): 
+        
+        coords ? (
+            <Grid container  spacing={2}>            
+                <Grid container item xs={6}>
+                    <Paper sx={{flexGrow: 1}} elevation={6}>
                     <Grid item xs={12}>
-                        <Button onClick={handleSubmit} variant="contained" color="primary">
-                            Create Event
-                        </Button>
+                        <TextField
+                            label="Name"
+                            name="name"
+                            variant="standard"
+                            value={formData.name}
+                            onChange={handleInputChange}
+                            margin="normal"
+                            helperText="Name your activity"
+                            required
+                        />
                     </Grid>
-                </Paper>
-            </Grid>            
-            
-            <Grid item xs={6}>
-                <Paper elevation={6}>
-                <APIProvider apiKey={process.env.NEXT_PUBLIC_GMAPS_API_KEY as string}>
-                    <div style={{height: '100vh', width: '100%'}}>
-                    <Map zoom={15} center={{lat:coords?.latitude as number, lng:coords?.longitude as number}} 
-                        mapId={process.env.NEXT_PUBLIC_GMAPS_MAP_ID}>
-                        <AdvancedMarker position={{lat:coords?.latitude as number, lng:coords?.longitude as number}}>
-                            <Pin />
-                        </AdvancedMarker>
-                    </Map>
-                    </div>
-                </APIProvider>
-                </Paper>
-            </Grid>
-            
-        </Grid>            
-        );
-    } else {
-        return (
-            <Box sx={{ display: 'flex' }}>
-                <CircularProgress />
-            </Box>
-        );
-    }
+                    <Grid item xs={12}>
+                        <TextField
+                            id="activitySelect"
+                            name="activity"
+                            variant="standard"
+                            select
+                            margin="normal"
+                            onChange={handleInputChange}
+                            required
+                            label="Activity"
+                            helperText="Please select the activity"
+                            defaultValue={"soccer"}
+                        >
+                            {activities.map((option) => (
+                                <MenuItem key={option.value} value={option.value}>
+                                {option.name}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            label="Description"
+                            name="description"
+                            variant="standard"
+                            helperText="Describe the activity with a few details"
+                            value={formData.description}
+                            onChange={handleInputChange}
+                            fullWidth
+                            required
+                            margin="normal"
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            label="Latitude"
+                            name="lat"
+                            type="number"
+                            variant="standard"
+                            helperText="Latitude of the activity location"
+                            fullWidth
+                            required
+                            value={latLng?.lat}
+                            margin="normal"
+                        />
+                        <TextField
+                            label="Longitude"
+                            name="lng"
+                            type="number"
+                            variant="standard"
+                            helperText="Longitude of the activity location"
+                            value={latLng?.lng}
+                            fullWidth
+                            required
+                            margin="normal"
+                        />
+                    </Grid>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <Grid item xs={12}>
+                        <MobileDateTimePicker
+                            label="Start Time"
+                            value={formData.startTime}
+                            disablePast
+                            formatDensity='spacious'
+                            onChange={(date) => handleDateTimeChange('startTime', date)}
+                            viewRenderers={{
+                                hours: renderTimeViewClock,
+                                minutes: renderTimeViewClock,
+                                seconds: null,
+                            }}                 
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <MobileDateTimePicker
+                            label="End Time"
+                            value={formData.endTime}
+                            disablePast
+                            formatDensity='spacious'
+                            onChange={(date) => handleDateTimeChange('endTime', date)}
+                            viewRenderers={{
+                                hours: renderTimeViewClock,
+                                minutes: renderTimeViewClock,
+                                seconds: null,
+                            }}
+                        />
+                    </Grid>
+                    </LocalizationProvider>
+                        <Grid item xs={12}>
+                            <Button onClick={handleSubmit} variant="contained" color="primary">
+                                Create Event
+                            </Button>
+                        </Grid>
+                    </Paper>
+                </Grid>            
+                
+                <Grid item xs={6}>
+                    <Paper elevation={6}>                    
+                        <APIProvider apiKey={process.env.NEXT_PUBLIC_GMAPS_API_KEY as string}>
+                            <div style={{height: '100vh', width: '100%'}}> 
+                            <Map onClick={handleMapClick} zoom={15} center={{lat:coords.latitude,lng: coords.longitude}} 
+                                mapId={process.env.NEXT_PUBLIC_GMAPS_MAP_ID}>
+                                { latLng && 
+                                    <AdvancedMarker position={latLng}>
+                                        <Pin />
+                                    </AdvancedMarker> 
+                                }
+                            </Map>
+                            </div>
+                        </APIProvider>
+                    </Paper>
+                </Grid>            
+            </Grid> 
+        ): <CircularProgress />;
     
 }

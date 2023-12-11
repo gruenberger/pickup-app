@@ -1,3 +1,7 @@
+import { Box, CircularProgress } from "@mui/material";
+
 export default function CreateEventLoad(){
-    return <p>Loading...</p>
+    return <Box sx={{ display: 'flex' }}>
+                <CircularProgress />
+            </Box>
 }
