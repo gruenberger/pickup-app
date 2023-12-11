@@ -49,6 +49,12 @@ interface Activity {
     value: string;
 }
 
+// location Interface
+interface LatLngLoc {
+    lat: number,
+    lng: number
+}
+
 // Activities
 const activities: Activity[] = [
     {name: "Soccer", value: "soccer"},
@@ -92,8 +98,8 @@ export default function EventForm({ user }: EventFormProps) {
     // Form values and their useState declarations
     const [name, setName ] = useState<string>();
     const [description, setDescription ] = useState<string>();
-    const [activity, setActivity ] = useState<string>();
-    const [latLng, setLatLng] = useState<google.maps.LatLngLiteral>();
+    const [activity, setActivity ] = useState<string>("soccer");
+    const [latLng, setLatLng] = useState<LatLngLoc>();
     const [startTime, setStartTime] = useState<Dayjs>();
     const [endTime, setEndTime] = useState<Dayjs>();
 
@@ -130,6 +136,7 @@ export default function EventForm({ user }: EventFormProps) {
     };
 
     const handleMapClick = (event: any) => {
+        const {lat, lng } = event.detail.latLng;
         setLatLng(event.detail.latLng);
     }
 
@@ -188,7 +195,7 @@ export default function EventForm({ user }: EventFormProps) {
                             required
                             label="Activity"
                             helperText="Please select the activity"
-                            defaultValue={"soccer"}
+                            defaultValue={activity}
                         >
                             {activities.map((option) => (
                                 <MenuItem key={option.value} value={option.value}>
@@ -221,6 +228,11 @@ export default function EventForm({ user }: EventFormProps) {
                             required
                             value={latLng?.lat}
                             margin="normal"
+                            InputLabelProps={{ shrink: true }}
+                            InputProps={{
+                                readOnly: true,
+                              }}
+                            
                         />
                         <TextField
                             label="Longitude"
@@ -232,6 +244,10 @@ export default function EventForm({ user }: EventFormProps) {
                             fullWidth
                             required
                             margin="normal"
+                            InputLabelProps={{ shrink: true }}
+                            InputProps={{
+                                readOnly: true,
+                              }}
                         />
                     </Grid>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
