@@ -21,7 +21,7 @@ model Event {
   lat         Float
   lng         Float
   owner       String
-  attendance  Int[]                @default([])
+  attendance  String[]                @default([])
   activity    String               @db.VarChar(100)
   createdAt   DateTime             @default(now()) @db.Timestamp(6)
   startTime   DateTime             @db.Timetz()
