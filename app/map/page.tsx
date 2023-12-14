@@ -1,44 +1,32 @@
-"use client";
-
-import { Wrapper, Status } from "@googlemaps/react-wrapper";
-import { ReactElement, useEffect, useState } from "react";
+import { db } from "@/lib/db";
 import { MapComponent } from "./MapComponent";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../api/auth/[...nextauth]/authOptions";
+import { notFound } from "next/navigation";
 
-export type LatLng = google.maps.LatLngLiteral;
+const zoom = 14;
 
-const zoom = 16;
 
-const render = (status: Status):ReactElement => {
-    if(status == Status.LOADING ||
-        status == Status.FAILURE
-        ) return <h3>{status} ..</h3>
-    return <></>
+export default async function PickupsMap() {
+    const session = await getServerSession(authOptions);
+    const dundalk = {lat:39.2537697,lng:-76.5058118};
+
+    if(!session){
+        return <MapComponent user={undefined} center={dundalk} zoom={zoom} />;
+    } else {
+        const user = await db.user.findFirst({
+            where: {
+                email: session?.user?.email,
+                name: session?.user?.name
+            }
+        });
+
+        if(!user){
+            return notFound();
+        }else{
+            const center: google.maps.LatLngLiteral = {lat: user.homeCenter[0],lng: user.homeCenter[1]};
+            return <MapComponent user={user} center={center} zoom={zoom} />
+        }
+    }
 }
 
-
-export default function PickupsMap() {
-
-    let apiKey: string = process.env.NEXT_PUBLIC_GMAPS_API_KEY ?? "";
-    console.log(apiKey);
-    let [center, setCenter] = useState({lat: 0, lng: 0});
-    let [games, setGames] = useState<LatLng[]>([]);
-
-    useEffect(()=>{
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                setCenter({
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                })
-            });
-        setGames(getGamesFromDb);
-    },[])
-
-    return (<Wrapper apiKey={apiKey} render={render}>
-        <MapComponent center={center} zoom={zoom} games={games}/>
-        </Wrapper>)
-}
-
-function getGamesFromDb(){
-    return new Array<LatLng>();
-}

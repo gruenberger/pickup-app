@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 // Material UI imports
-import { Box, CircularProgress, Grid, MenuItem, Modal, Paper, Typography } from '@mui/material';
+import { Box, CircularProgress,  MenuItem, Modal, Paper, Typography } from '@mui/material';
+import Grid from '@mui/material/Unstable_Grid2';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -202,16 +203,16 @@ export default function EventForm({ user }: EventFormProps) {
             ): 
         
         coords ? (
-            <div>
+            <Box>
             <Grid container  spacing={2}>            
-                <Grid container item xs={6}>
+                <Grid container xs={6}>
                     <Paper sx={{flexGrow: 1}} elevation={6}>
-                        <Grid item xs={12}>
+                        <Grid display="flex" justifyContent="center" xs={12}>
                             <Typography variant='h5'>
                                 Enter Event Information
                             </Typography>
                         </Grid>
-                    <Grid item xs={12}>
+                    <Grid display="flex" justifyContent="center" xs={12}>
                         <TextField
                             label="Name"
                             name="name"
@@ -222,7 +223,7 @@ export default function EventForm({ user }: EventFormProps) {
                             required
                         />
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid display="flex" justifyContent="center" xs={12}>
                         <TextField
                             id="activitySelect"
                             name="activity"
@@ -241,7 +242,7 @@ export default function EventForm({ user }: EventFormProps) {
                             ))}
                         </TextField>
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid display="flex" justifyContent="center" xs={12}>
                         <TextField
                             label="Description"
                             name="description"
@@ -253,7 +254,7 @@ export default function EventForm({ user }: EventFormProps) {
                             margin="normal"
                         />
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid display="flex" justifyContent="center" xs={12}>
                         <TextField
                             label="Latitude"
                             name="lat"
@@ -285,7 +286,7 @@ export default function EventForm({ user }: EventFormProps) {
                         />
                     </Grid>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <Grid item xs={12}>
+                    <Grid display="flex" justifyContent="center" xs={12}>
                         <MobileDateTimePicker
                             label="Start Time"
                             value={startTime}
@@ -300,7 +301,7 @@ export default function EventForm({ user }: EventFormProps) {
                             sx={{marginTop: "16px", marginBottom: "8px"}}                 
                         />
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid display="flex" justifyContent="center" xs={12}>
                         <MobileDateTimePicker
                             label="End Time"
                             value={endTime}
@@ -316,7 +317,7 @@ export default function EventForm({ user }: EventFormProps) {
                         />
                     </Grid>
                     </LocalizationProvider>
-                        <Grid item xs={12}>
+                        <Grid display="flex" justifyContent="center" xs={12}>
                             <Button onClick={handleSubmit} variant="contained" color="primary">
                                 Create Event
                             </Button>
@@ -324,7 +325,7 @@ export default function EventForm({ user }: EventFormProps) {
                     </Paper>
                 </Grid>            
                 
-                <Grid item xs={6}>
+                <Grid xs={6}>
                     <Paper elevation={6}>                    
                         <APIProvider apiKey={process.env.NEXT_PUBLIC_GMAPS_API_KEY as string}>
                             <div style={{height: '100vh', width: '100%'}}> 
@@ -356,7 +357,7 @@ export default function EventForm({ user }: EventFormProps) {
                     </Typography>
                 </Box>
             </Modal>
-            </div>
+            </Box>
              
         ): <CircularProgress />;
     
