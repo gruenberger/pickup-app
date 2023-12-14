@@ -9,7 +9,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 export default function AuthButton() {
     const {data: session, status} = useSession();
-    console.log(session, status);
 
     if (status === 'loading'){
         return <CircularProgress />;

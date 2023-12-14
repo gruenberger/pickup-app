@@ -5,17 +5,21 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 
 import Navdrawer from './navdrawer';
-import AuthButton from '@/app/ui/AuthButton';
+import AuthButton from '@/ui/AuthButton';
+import Button from '@mui/material/Button';
 
 export default function Navbar() {
     return (
     <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static">
             <Toolbar>
-                <Navdrawer />    
-                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                Pickup App
-                </Typography>
+                <Navdrawer />
+                <Button href="/" variant="text">
+                    <Typography variant="h6" component="div" sx={{ textTransform: "none", color: "white"}}>
+                        PickupApp
+                    </Typography>
+                </Button>
+                <Box sx={{flexGrow:1}} />
                 <AuthButton />
             </Toolbar>
         </AppBar>

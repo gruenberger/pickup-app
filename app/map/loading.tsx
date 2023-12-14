@@ -1,3 +1,5 @@
+import { CircularProgress } from "@mui/material";
+
 export default function MapLoading(){
-    return <p>Loading the map... one moment.</p>
+    return <CircularProgress />
 }

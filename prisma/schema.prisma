@@ -16,28 +16,19 @@ datasource db {
 
 model Event {
   id          Int               @id(map: "event_pkey") @default(autoincrement())
-  name        String               @db.VarChar(100)
+  name        String            @db.VarChar(100)
   description String?
-  location    Int
+  lat         Float
+  lng         Float
   owner       String
-  attendance  Int[]                @default([])
+  attendance  String[]                @default([])
   activity    String               @db.VarChar(100)
   createdAt   DateTime             @default(now()) @db.Timestamp(6)
   startTime   DateTime             @db.Timetz()
   endTime     DateTime             @db.Timetz()
   User        User                 @relation(fields: [owner], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "owner_fkey")
-  Location    Location             @relation(fields: [location], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "location_fkey")
 }
 
-
-
-model Location {
-  id      Int   @id(map: "location_pkey") @default(autoincrement())
-  lat     Float
-  lon     Float
-  type    String
-  Event   Event[]
-}
 
 // Next Auth required models
 model Account {

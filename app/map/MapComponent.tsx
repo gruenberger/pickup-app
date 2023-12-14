@@ -1,53 +1,45 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
-import { Loader } from '@googlemaps/js-api-loader';
-import { LatLng } from "./page";
+import { Paper } from "@mui/material";
+import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
+import { APIProvider, AdvancedMarker, Pin, Map, Marker } from "@vis.gl/react-google-maps";
+import { User } from "@prisma/client";
+import { getEvents } from "./mapActions";
 
-export function MapComponent({ center, zoom, games }: { center: LatLng, zoom: number, games: Array<LatLng> }) {
-    const ref = React.useRef<HTMLDivElement>(null);
 
-    let defaultLoc: google.maps.LatLngLiteral = { lat: 90, lng: 0 };
-    //let zoom: number = 16;
 
+interface MapComponentProps {
+    center: google.maps.LatLngLiteral;
+    zoom: number;
+    user: User | undefined;
+}
+
+export function MapComponent({ center, zoom, user }: MapComponentProps) {
+    const [events, setEvents] = useState<Array<google.maps.LatLngLiteral>>();
+    
     useEffect(() => {
-
-        const map = new window.google.maps.Map(ref.current as HTMLElement, {
-            center,
-            zoom,
-            mapId: "id"
+        getEvents(center).then((events) =>{
+            setEvents(events);
         });
+    }),[events];
 
-        // move api key a context 
-        const loader = new Loader({
-            apiKey: process.env.NEXT_PUBLIC_GMAPS_API_KEY ?? "",
-        });
-
-        loader.importLibrary("marker").then(markerLibrary => {
-
-            const marker = new markerLibrary.AdvancedMarkerElement({
-                map: map,
-                position: center,
-                title: "username"
-            });
-
-            games.forEach(game => {
-
-                new markerLibrary.AdvancedMarkerElement({
-                    map: map,
-                    position: game,
-                    title: "match"
-                })
-
-            })
-
-        }).catch((e) => {
-            console.log(e);
-
-        });
-
-    });
-
-    return <div ref={ref} id="map" style={{ width: "1000px", height: "700px" }}>
-    </div>;
-
+    return (
+        <Grid container>
+            <Grid xs={12}>
+            <Paper elevation={6}>                    
+                <APIProvider apiKey={process.env.NEXT_PUBLIC_GMAPS_API_KEY as string}>
+                    <div style={{height: '100vh', width: '100%'}}> 
+                    <Map  zoom={zoom} center={center} 
+                        mapId={process.env.NEXT_PUBLIC_GMAPS_MAP_ID}>
+                            {events && events?.map((event,index)=>(
+                                <Marker key={`event-marker-${index}`} position={event}/>
+                            ))}
+                    </Map>
+                    </div>
+                </APIProvider>
+            </Paper>
+            </Grid>
+        </Grid>
+    );
 } 
