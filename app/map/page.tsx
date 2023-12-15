@@ -9,7 +9,7 @@ const zoom = 14;
 
 export default async function PickupsMap() {
     const session = await getServerSession(authOptions);
-    const dundalk = {lat:39.2537697,lng:-76.5058118};
+    const dundalk = {lat:39.2365569,lng:-76.5031196};
 
     if(!session){
         return <MapComponent user={undefined} center={dundalk} zoom={zoom} />;
