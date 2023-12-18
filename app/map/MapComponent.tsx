@@ -1,12 +1,15 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { CircularProgress, Paper, Typography } from "@mui/material";
+import React, { useState } from "react";
+import { Box, CircularProgress, Paper, Typography } from "@mui/material";
 import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
-import { APIProvider, AdvancedMarker, Pin, Map, useAdvancedMarkerRef, InfoWindow } from "@vis.gl/react-google-maps";
+import { APIProvider, AdvancedMarker, Pin, Map, InfoWindow } from "@vis.gl/react-google-maps";
 import { User,Event } from "@prisma/client";
-import { getEvents, getEventById } from "./mapActions";
+import { getEventById } from "./mapActions";
 import { EventMapSumm } from "./mapActions";
+
+// Activity Icon imports
+import { getActivityIcon, getName } from "@/lib/activities";
 
 
 
@@ -49,14 +52,34 @@ export function MapComponent({ center, zoom, user, events }: MapComponentProps) 
                     <Map  zoom={zoom} center={center} 
                         mapId={process.env.NEXT_PUBLIC_GMAPS_MAP_ID}>
                             {events && events?.map((event)=>(
-                                <AdvancedMarker key={event.id} position={{lat:event.lat,lng:event.lng}} onClick={() =>handleInfoWindow(event)}/>
+                                <AdvancedMarker key={event.id} position={{lat:event.lat,lng:event.lng}} onClick={() =>handleInfoWindow(event)}>
+                                    <Pin background={'white'} borderColor={'#1976d2'}>
+                                        {getActivityIcon(event.activity)}
+                                    </Pin>
+                                </AdvancedMarker>
                             ))}
                             {infowindowShown && (
                             <InfoWindow position={infoWindowEvent? {lat:infoWindowEvent?.lat,lng: infoWindowEvent?.lng} : null} onCloseClick={closeInfoWindow}>
-                                <Typography variant='caption'>
-                                    {infoWindowEvent && infoWindowEvent.name}
-                                </Typography>
-                            </InfoWindow>
+                                {infoWindowEvent && (
+                                    <Box>
+                                        <Typography variant='h6'>
+                                            {infoWindowEvent.name}
+                                        </Typography>
+                                        <Typography variant='body2'>
+                                            {`Activity: ${getName(infoWindowEvent.activity)}`}
+                                        </Typography>
+                                        <Typography variant='body2'>
+                                            {`Description: ${infoWindowEvent.description}`}
+                                        </Typography>
+                                        <Typography variant='body2'>
+                                            {`Starts at: ${infoWindowEvent.startTime.toLocaleTimeString()}`}
+                                        </Typography>
+                                        <Typography variant='body2'>
+                                            {`Owner: ${infoWindowEvent.owner}`}
+                                        </Typography>
+                                    </Box>
+                                )}                                
+                            </InfoWindow>                            
                             )}
                     </Map>
                     </div>

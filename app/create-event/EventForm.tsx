@@ -12,7 +12,7 @@ import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker';
 import { renderTimeViewClock } from '@mui/x-date-pickers/timeViewRenderers';
 
 // Activities Enum
-import { Activities, Activity } from '@/lib/activities';
+import { Activities, Activity, getIcon } from '@/lib/activities';
 
 // Until I have a better way, MUI-X DateTimePicker
 import dayjs, { Dayjs } from 'dayjs';
@@ -121,7 +121,10 @@ export default function EventForm({ user }: EventFormProps) {
     const handleActivityChange = (
         event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
-        setActivity({name: event.target.name, value:event.target.value});        
+        setActivity({
+            name: event.target.name,
+            value:event.target.value,
+            icon: getIcon(event.target.value)});        
     };    
 
     const handleStartTimeChange = (date: Dayjs | null) => {
