@@ -2,11 +2,13 @@
 
 import { db } from "@/lib/db";
 import { Event } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 
 export interface EventMapSumm {
     id: number;
     lat: number;
     lng: number;
+    activity: string;
 }
 
 export async function getEvents(center: google.maps.LatLngLiteral) {
@@ -15,10 +17,11 @@ export async function getEvents(center: google.maps.LatLngLiteral) {
             return {
                 id: event.id,
                 lat: event.lat,
-                lng: event.lng
+                lng: event.lng,
+                activity: event.activity
             }
         });
-    
+    revalidatePath('/map');
     return events;
 }
 
