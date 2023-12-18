@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Paper, Typography } from "@mui/material";
+import { CircularProgress, Paper, Typography } from "@mui/material";
 import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
 import { APIProvider, AdvancedMarker, Pin, Map, useAdvancedMarkerRef, InfoWindow } from "@vis.gl/react-google-maps";
 import { User,Event } from "@prisma/client";
-import { getEvents } from "./mapActions";
+import { getEvents, getEventById } from "./mapActions";
+import { EventMapSumm } from "./mapActions";
 
 
 
@@ -18,34 +19,35 @@ interface MapComponentProps {
 
 
 export function MapComponent({ center, zoom, user }: MapComponentProps) {
-    const [events, setEvents] = useState<Array<Event>>();
+    const [events, setEvents] = useState<Array<EventMapSumm> | null>();
     const [infoWindowText, setInfoWindowText] = useState<string>('nothing to see here');
-    
-    useEffect(() => {        
-        getEvents(center).then((events) =>{            
-            setEvents(events);
-        });
-    }),[events];
-    const [infoMarker, setInfoMarker] = useState<google.maps.LatLngLiteral>();
+    const [infoWindowEvent, setInfoWindowEvent] = useState<Event | null>();  
     const [infowindowShown, setInfowindowShown] = useState(false);
+    
+    // Fetch all the events for the map.
+    useEffect(() => { 
+        const fetchEvents = async () =>{
+            const fetchedEvents = await getEvents(center);
+            setEvents(fetchedEvents);
+        }
+        fetchEvents();
+    }),[events];
 
-    const toggleInfoWindow = () =>
-        setInfowindowShown(previousState => !previousState);
+    // Will not load the component until events have been fetched.
+    if(!events){
+        return <CircularProgress />;
+    }
     const openInfoWindow = () => setInfowindowShown(true);
-
-
     const closeInfoWindow = () => setInfowindowShown(false);
 
-    const handleInfoWindow = (e: google.maps.MapMouseEvent) => {
-        console.log(e.latLng?.toString());
-        const clickedEvent  = events?.filter(ev => ev.lat == e.latLng?.lat() && ev.lng == e.latLng.lng())[0];
-        if(clickedEvent){
-            setInfoWindowText(`${clickedEvent.name}
-            \nDescription: ${clickedEvent.description}
-            \nStart Time: ${clickedEvent.startTime.toString()}`)
-            setInfoMarker({lat: clickedEvent.lat, lng: clickedEvent.lng});
-        }
-        openInfoWindow();
+    // When the info window opens, fetch the event info
+    const handleInfoWindow = (eventSumm: EventMapSumm ) => {
+        const fetchEventById = async () => {
+            const fetchedEv = await getEventById(eventSumm.id) ;           
+            setInfoWindowEvent(fetchedEv);
+            openInfoWindow();
+        };
+        fetchEventById();
     }
 
     return (
@@ -56,13 +58,13 @@ export function MapComponent({ center, zoom, user }: MapComponentProps) {
                     <div style={{height: '100vh', width: '100%'}}> 
                     <Map  zoom={zoom} center={center} 
                         mapId={process.env.NEXT_PUBLIC_GMAPS_MAP_ID}>
-                            {events && events?.map((event,index)=>(
-                                <AdvancedMarker key={`event-marker-${index}`} position={{lat:event.lat,lng:event.lng}} onClick={handleInfoWindow}/>
+                            {events && events?.map((event)=>(
+                                <AdvancedMarker key={event.id} position={{lat:event.lat,lng:event.lng}} onClick={() =>handleInfoWindow(event)}/>
                             ))}
                             {infowindowShown && (
-                            <InfoWindow position={infoMarker} onCloseClick={closeInfoWindow}>
-                                <Typography variant='body1'>
-                                    {infoWindowText}
+                            <InfoWindow position={infoWindowEvent? {lat:infoWindowEvent?.lat,lng: infoWindowEvent?.lng} : null} onCloseClick={closeInfoWindow}>
+                                <Typography variant='caption'>
+                                    TEST EVENT INFO WINDOW
                                 </Typography>
                             </InfoWindow>
                             )}

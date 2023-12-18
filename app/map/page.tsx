@@ -6,6 +6,8 @@ import { notFound } from "next/navigation";
 
 const zoom = 14;
 
+export const revalidate = 10;
+
 
 export default async function PickupsMap() {
     const session = await getServerSession(authOptions);
