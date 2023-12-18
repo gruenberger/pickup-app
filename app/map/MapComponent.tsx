@@ -14,30 +14,20 @@ interface MapComponentProps {
     center: google.maps.LatLngLiteral;
     zoom: number;
     user: User | undefined;
+    events: EventMapSumm[];
 }
 
 
 
-export function MapComponent({ center, zoom, user }: MapComponentProps) {
-    const [events, setEvents] = useState<Array<EventMapSumm> | null>();
-    const [infoWindowText, setInfoWindowText] = useState<string>('nothing to see here');
+export function MapComponent({ center, zoom, user, events }: MapComponentProps) {
+    
     const [infoWindowEvent, setInfoWindowEvent] = useState<Event | null>();  
     const [infowindowShown, setInfowindowShown] = useState(false);
-    
-    // Fetch all the events for the map.
-    useEffect(() => { 
-        const fetchEvents = async () =>{
-            const fetchedEvents = await getEvents(center);
-            setEvents(fetchedEvents);
-        }
-        fetchEvents();
-    }),[events];
 
     // Will not load the component until events have been fetched.
     if(!events){
         return <CircularProgress />;
     }
-    const openInfoWindow = () => setInfowindowShown(true);
     const closeInfoWindow = () => setInfowindowShown(false);
 
     // When the info window opens, fetch the event info
@@ -45,10 +35,10 @@ export function MapComponent({ center, zoom, user }: MapComponentProps) {
         const fetchEventById = async () => {
             const fetchedEv = await getEventById(eventSumm.id) ;           
             setInfoWindowEvent(fetchedEv);
-            openInfoWindow();
+            setInfowindowShown(true);
         };
         fetchEventById();
-    }
+    };
 
     return (
         <Grid container>
@@ -64,7 +54,7 @@ export function MapComponent({ center, zoom, user }: MapComponentProps) {
                             {infowindowShown && (
                             <InfoWindow position={infoWindowEvent? {lat:infoWindowEvent?.lat,lng: infoWindowEvent?.lng} : null} onCloseClick={closeInfoWindow}>
                                 <Typography variant='caption'>
-                                    TEST EVENT INFO WINDOW
+                                    {infoWindowEvent && infoWindowEvent.name}
                                 </Typography>
                             </InfoWindow>
                             )}
