@@ -11,6 +11,9 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker';
 import { renderTimeViewClock } from '@mui/x-date-pickers/timeViewRenderers';
 
+// Activities Enum
+import { Activities, Activity, getIcon } from '@/lib/activities';
+
 // Until I have a better way, MUI-X DateTimePicker
 import dayjs, { Dayjs } from 'dayjs';
 import isLeapYear from 'dayjs/plugin/isLeapYear';
@@ -48,41 +51,11 @@ interface EventFormProps {
     user: User;
 }
 
-// Activity Interface
-interface Activity {
-    name: string;
-    value: string;
-}
-
 // location Interface
 interface LatLngLoc {
     lat: number;
     lng: number;
 }
-
-// Activities
-const activities: Activity[] = [
-    {name: "Soccer", value: "soccer"},
-    {name: "Basketball", value: "basketball"},
-    {name: "Football", value: "football"},
-    {name: "Baseball", value: "baseball"},
-    {name: "Volleyball", value: "volleyball"},
-    {name: "Lacrosse", value: "lacrosse"},
-    {name: "Ultimate Frisbee", value: "ultimatefrisbee"},
-    {name: "Skateboarding", value: "skateboarding"},
-    {name: "Running", value: "running"},
-    {name: "Tennis", value: "tennis"},
-    {name: "Cricket", value: "cricket"},
-    {name: "Field Hockey", value: "fieldhockey"},
-    {name: "Badminton", value: "badminton"},
-    {name: "Table Tennis", value: "tabletennis"},
-    {name: "Chess", value: "chess"},
-    {name: "Checkers", value: "checkers"},
-    {name: "Magic The Gathering", value: "magic"},
-    {name: "Warhammer", value: "warhammer"},
-    {name: "Video Game (See Desc)", value: "videogame"},
-    {name: "Other (See Desc)", value: "other"},
-];
 
 // Modal Style
 const modalStyle = {
@@ -116,7 +89,7 @@ export default function EventForm({ user }: EventFormProps) {
     // Form values and their useState declarations
     const [name, setName ] = useState<string>('');
     const [description, setDescription ] = useState<string>('');
-    const [activity, setActivity ] = useState<Activity>({name:"Soccer", value:"soccer"});
+    const [activity, setActivity ] = useState<Activity>(Activities[0]);
     const [latLng, setLatLng] = useState<LatLngLoc>({lat:user.homeCenter[0], lng:user.homeCenter[1]});
     const [startTime, setStartTime] = useState<Dayjs>(dayjs().add(1,'hour'));
     const [endTime, setEndTime] = useState<Dayjs>(dayjs().add(2,'hour'));
@@ -148,7 +121,10 @@ export default function EventForm({ user }: EventFormProps) {
     const handleActivityChange = (
         event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
-        setActivity({name: event.target.name, value:event.target.value});        
+        setActivity({
+            name: event.target.name,
+            value:event.target.value,
+            icon: getIcon(event.target.value)});        
     };    
 
     const handleStartTimeChange = (date: Dayjs | null) => {
@@ -235,7 +211,7 @@ export default function EventForm({ user }: EventFormProps) {
                             helperText="Please select the activity"
                             value={activity.value}
                         >
-                            {activities.map((option) => (
+                            {Activities.map((option) => (
                                 <MenuItem key={option.value} value={option.value}>
                                 {option.name}
                                 </MenuItem>
