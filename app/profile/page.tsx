@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/authOptions";
 import { db } from "@/lib/db";
 import { User } from "@prisma/client";
-import { Accordion, AccordionDetails, AccordionSummary, Box, Divider, Paper, Typography } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Box, Divider, Paper, Tooltip, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import ProfileHomeSelectComponent from "./profileHomeSelectComponent";
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
@@ -11,6 +11,23 @@ import GppBadIcon from '@mui/icons-material/GppBad';
 
 export default async function Profile() {
     const session = await getServerSession(authOptions);
+
+    const updateHomeLocation = async (user: User, coords: google.maps.LatLngLiteral) =>{
+        'use server';
+        const updatedUser: User = {
+            ...user,
+            homeCenter: [coords.lat,coords.lng]
+        };
+        try {
+        const returnVal = await db.user.update({
+            where:{id: user.id},
+            data: updatedUser
+        });
+        console.log(`Updated user ${returnVal.homeCenter}`);
+        } catch(error){
+            console.log(`Error saving user: ${error}`);
+        }
+    };
     if(!session || !session.user){
         return <p>Please Log in to continue.</p>
     } else if(session.user && session.user.email){
@@ -32,7 +49,9 @@ export default async function Profile() {
                             <Typography variant="h6">Name</Typography>
                             <Typography variant="body1">{user.name}</Typography>
                             <Typography variant="h6">Home Coordinates</Typography>
-                            <Typography variant="body1">{user.homeCenter[0]}, {user.homeCenter[1]}</Typography>                            
+                            <Tooltip title="Click on the map to set a new home location.">
+                                <Typography variant="body1">{user.homeCenter[0]}, {user.homeCenter[1]}</Typography>
+                            </Tooltip>                        
                         </Paper>
                         </Grid>
                         <Grid>
@@ -83,7 +102,7 @@ export default async function Profile() {
                         </Grid>
                         </Grid>
                     <Grid xs={6}>
-                        <ProfileHomeSelectComponent user={user}/>
+                        <ProfileHomeSelectComponent user={user} updateLocation={updateHomeLocation}/>
                     </Grid>
                 </Grid>
             </Box>

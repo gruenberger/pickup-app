@@ -79,7 +79,7 @@ export default function EventForm({ user }: EventFormProps) {
          } =
         useGeolocated({
             positionOptions: {
-                enableHighAccuracy: false,
+                enableHighAccuracy: true,
             },
             userDecisionTimeout: 5000,
             watchLocationPermissionChange: true,

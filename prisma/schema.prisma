@@ -74,6 +74,8 @@ model User {
   sessions      Session[]
   events    Event[]
   homeCenter Float[] @default([39.2654073,-76.5139326])
+  distance Int @default(1)
+  notifications Boolean @default(false)
   }
 
 model VerificationToken {
