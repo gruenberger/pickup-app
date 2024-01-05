@@ -1,9 +1,8 @@
 import { db } from "@/lib/db";
 import { MapComponent } from "./MapComponent";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../api/auth/[...nextauth]/authOptions";
 import { notFound } from "next/navigation";
 import { getEvents } from "./mapActions";
+import { auth } from "@/auth";
 
 const zoom = 14;
 
@@ -11,7 +10,7 @@ export const revalidate = 10;
 
 
 export default async function PickupsMap() {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
     const dundalk = {lat:39.2365569,lng:-76.5031196};
     
 
@@ -19,10 +18,9 @@ export default async function PickupsMap() {
         const events = await getEvents(dundalk);
         return <MapComponent user={undefined} center={dundalk} zoom={zoom} events={events} />;
     } else {
-        const user = await db.user.findFirst({
+        const user = await db.user.findUnique({
             where: {
-                email: session?.user?.email,
-                name: session?.user?.name
+                id: session.user?.id
             }
         });
 

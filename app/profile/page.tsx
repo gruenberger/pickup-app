@@ -1,5 +1,3 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "../api/auth/[...nextauth]/authOptions";
 import { db } from "@/lib/db";
 import { User } from "@prisma/client";
 import { Accordion, AccordionDetails, AccordionSummary, Box, Divider, Paper, Tooltip, Typography } from "@mui/material";
@@ -8,9 +6,10 @@ import ProfileHomeSelectComponent from "./profileHomeSelectComponent";
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import GppBadIcon from '@mui/icons-material/GppBad';
+import { auth } from "@/auth";
 
 export default async function Profile() {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     const updateHomeLocation = async (user: User, coords: google.maps.LatLngLiteral) =>{
         'use server';
@@ -30,9 +29,9 @@ export default async function Profile() {
     };
     if(!session || !session.user){
         return <p>Please Log in to continue.</p>
-    } else if(session.user && session.user.email){
+    } else if(session.user && session.user.id){
         try{
-            const user: User = await db.user.findUniqueOrThrow({where: {email: session.user.email}});
+            const user: User = await db.user.findUniqueOrThrow({where: {id: session.user.id}});
             return(
             <Box sx={{flexGrow:1}}>
                 <Grid container spacing={2}>

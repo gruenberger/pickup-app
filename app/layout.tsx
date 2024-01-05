@@ -7,9 +7,7 @@ import '@fontsource/roboto/700.css';
 import Navbar from './navbar';
 import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
 
-import SessionProvider from './components/SessionProvider';
-import { getServerSession } from 'next-auth';
-import { authOptions } from './api/auth/[...nextauth]/authOptions';
+import Providers from './providers';
 import Box from '@mui/material/Box';
 
 export const metadata: Metadata = {
@@ -22,11 +20,11 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const session = await getServerSession(authOptions);
+  console.log("IN LAYOUT line 23");
   return (
       <html lang="en">
         <body style={{backgroundColor:"#F3F6F9" }}>
-          <SessionProvider session={session}>
+          <Providers>
             <Box sx={{ flexGrow: 1}}>
               <Grid container spacing={2}>
                 <Grid xs={12} >
@@ -37,7 +35,7 @@ export default async function RootLayout({
                 </Grid>
               </Grid>
             </Box>
-          </SessionProvider>
+          </Providers>
         </body>
       </html>
   )
