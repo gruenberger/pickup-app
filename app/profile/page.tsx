@@ -7,6 +7,8 @@ import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import GppBadIcon from '@mui/icons-material/GppBad';
 import { auth } from "@/auth";
+import GameHistoryComponent from "./GameHistory";
+
 
 export default async function Profile() {
     const session = await auth();
@@ -32,6 +34,8 @@ export default async function Profile() {
     } else if(session.user && session.user.id){
         try{
             const user: User = await db.user.findUniqueOrThrow({where: {id: session.user.id}});
+            const createdGames = user.eventsCreated || [];
+            const attendedGames = user.eventsAttended || [];
             return(
             <Box sx={{flexGrow:1}}>
                 <Grid container spacing={2}>
@@ -54,50 +58,7 @@ export default async function Profile() {
                         </Paper>
                         </Grid>
                         <Grid>
-                        <Paper elevation={6}>
-                            <Accordion >
-                                <AccordionSummary
-                                    expandIcon={<ExpandMoreIcon />}
-                                    aria-controls="created-events-content"
-                                    id="created-events-content"
-                                >
-                                    <Typography variant="h6">Created Games</Typography>
-                                </AccordionSummary>
-                                <AccordionDetails>
-                                    <Typography>
-                                        Events Here
-                                    </Typography>
-                                </AccordionDetails>
-                            </Accordion>
-                            <Accordion>
-                                <AccordionSummary
-                                    expandIcon={<ExpandMoreIcon />}
-                                    aria-controls="participated-events-content"
-                                    id="participated-events-content"
-                                >
-                                    <Typography variant="h6">Attended Events</Typography>
-                                </AccordionSummary>
-                                <AccordionDetails>
-                                    <Typography>
-                                        Events Here
-                                    </Typography>
-                                </AccordionDetails>
-                            </Accordion>
-                            <Accordion>
-                                <AccordionSummary
-                                    expandIcon={<ExpandMoreIcon />}
-                                    aria-controls="friends-content"
-                                    id="friends-content"
-                                >
-                                    <Typography variant="h6">Friends</Typography>
-                                </AccordionSummary>
-                                <AccordionDetails>
-                                    <Typography>
-                                        Friends Here
-                                    </Typography>
-                                </AccordionDetails>
-                            </Accordion>                            
-                        </Paper>
+                            <GameHistoryComponent created={createdGames} attended={attendedGames} />
                         </Grid>
                         </Grid>
                     <Grid xs={6}>
