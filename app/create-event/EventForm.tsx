@@ -38,7 +38,7 @@ export interface CreateEventFormData  {
   description: string;
   owner: string;
   activity: string;
-  attendance: [];
+  attendance: string[];
   lat: number;
   lng: number;
   createdAt: Date;
@@ -156,7 +156,7 @@ export default function EventForm({ user }: EventFormProps) {
             lng: latLng?.lng as number,
             owner: user.id,
             activity: activity.value,
-            attendance: [],
+            attendance: [user.id],
             createdAt: new Date(),
             startTime: startTime.toDate(),
             endTime: endTime.toDate()

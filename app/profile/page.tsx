@@ -34,8 +34,7 @@ export default async function Profile() {
     } else if(session.user && session.user.id){
         try{
             const user: User = await db.user.findUniqueOrThrow({where: {id: session.user.id}});
-            const createdGames = user.eventsCreated || [];
-            const attendedGames = user.eventsAttended || [];
+            
             return(
             <Box sx={{flexGrow:1}}>
                 <Grid container spacing={2}>
@@ -58,7 +57,7 @@ export default async function Profile() {
                         </Paper>
                         </Grid>
                         <Grid>
-                            <GameHistoryComponent created={createdGames} attended={attendedGames} />
+                            <GameHistoryComponent userId={user.id}  />
                         </Grid>
                         </Grid>
                     <Grid xs={6}>

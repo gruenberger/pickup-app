@@ -1,15 +1,17 @@
 "use client";
 
 import React, { useState } from "react";
-import { Box, CircularProgress, Paper, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Paper, Typography } from "@mui/material";
 import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
 import { APIProvider, AdvancedMarker, Pin, Map, InfoWindow } from "@vis.gl/react-google-maps";
 import { User,Event } from "@prisma/client";
 import { getEventById } from "./mapActions";
 import { EventMapSumm } from "./mapActions";
+import { joinEventById } from "./mapActions";
 
 // Activity Icon imports
 import { getActivityIcon, getName } from "@/lib/activities";
+import JoinButton from "./JoinButton";
 
 
 
@@ -78,7 +80,10 @@ export function MapComponent({ center, zoom, user, events }: MapComponentProps) 
                                             {`Owner: ${infoWindowEvent.owner}`}
                                         </Typography>
                                     </Box>
-                                )}                                
+                                )}
+                                {(user && infoWindowEvent) && (
+                                    <JoinButton infoWindowSetter={setInfoWindowEvent} event={infoWindowEvent} userId={user.id} />
+                                )}                     
                             </InfoWindow>                            
                             )}
                     </Map>

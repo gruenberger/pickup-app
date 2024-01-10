@@ -34,3 +34,31 @@ export async function getEventById(eventId: number) {
 
     return event as Event;
 }
+
+export async function joinEventById(event: Event, userId: string){
+    let newAttendance = event.attendance;
+    newAttendance.push(userId);
+    const returnVal = await db.event.update({
+        where: {id: event.id},
+        data:{
+            ...event,
+            attendance: newAttendance
+        }
+    });
+    return returnVal;
+}
+
+export async function unjoinEventById(event: Event, userId: string){
+    let newAttendance = event.attendance;
+    newAttendance = newAttendance.filter((attendee)=>{
+        return attendee !== userId;
+    });
+    const returnVal = await db.event.update({
+        where: {id: event.id},
+        data:{
+            ...event,
+            attendance: newAttendance
+        }
+    });
+    return returnVal;
+}

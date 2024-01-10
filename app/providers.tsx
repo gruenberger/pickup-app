@@ -7,7 +7,6 @@ interface ProvidersProps {
 }
 
 export default function Providers({children}: ProvidersProps){
-    console.log("IN PROVIDERS LINE 10");
     return (
         <SessionProvider>
             {children}

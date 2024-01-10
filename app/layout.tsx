@@ -20,7 +20,6 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  console.log("IN LAYOUT line 23");
   return (
       <html lang="en">
         <body style={{backgroundColor:"#F3F6F9" }}>
