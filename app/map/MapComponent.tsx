@@ -79,10 +79,13 @@ export function MapComponent({ center, zoom, user, events }: MapComponentProps) 
                                         <Typography variant='body2'>
                                             {`Owner: ${infoWindowEvent.owner}`}
                                         </Typography>
+                                        <Typography variant='body2'>
+                                            {`Total Number Planning to Attend: ${infoWindowEvent.attendance.length}`}
+                                        </Typography>
                                     </Box>
                                 )}
                                 {(user && infoWindowEvent) && (
-                                    <JoinButton infoWindowSetter={setInfoWindowEvent} event={infoWindowEvent} userId={user.id} />
+                                    <JoinButton infoWindowSetter={setInfoWindowEvent} event={infoWindowEvent} userId={user.id} infoWindowClose={setInfowindowShown} />
                                 )}                     
                             </InfoWindow>                            
                             )}

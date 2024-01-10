@@ -106,8 +106,7 @@ export default function GameHistoryComponent({userId}: GameHistoryProps) {
                                 <TableCell component="th" scope="row">
                                     {row.name}
                                 </TableCell>
-                                <TableCell align="right">{row.name}</TableCell>
-                                <TableCell align="right">{row.startTime.toLocaleDateString()}</TableCell>
+                                <TableCell align="right">{row.startTime.toLocaleTimeString()}</TableCell>
                                 <TableCell align="right">{row.activity}</TableCell>
                                 </TableRow>
                             ))}

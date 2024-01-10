@@ -62,3 +62,11 @@ export async function unjoinEventById(event: Event, userId: string){
     });
     return returnVal;
 }
+
+export async function deleteEventById(eventId: number){
+    const deleted = await db.event.delete({
+        where: {
+            id: eventId
+        }
+    });
+}

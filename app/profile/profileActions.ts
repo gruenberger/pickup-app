@@ -18,6 +18,9 @@ export async function getEventsAttended(userId: string){
           attendance: {
             has: userId,
           },
+          NOT : {
+            owner : userId
+          }
         },
       });
     
