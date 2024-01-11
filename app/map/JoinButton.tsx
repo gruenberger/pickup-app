@@ -1,8 +1,8 @@
 'use client';
 
-import { Box, Button } from "@mui/material";
+import { Button } from "@mui/material";
 import { Event } from "@prisma/client";
-import { deleteEventById, joinEventById, unjoinEventById } from "./mapActions";
+import { EventMapSumm, deleteEventById, joinEventById, unjoinEventById } from "./mapActions";
 
 interface JoinButtonParams {
     infoWindowSetter: Function
@@ -11,7 +11,7 @@ interface JoinButtonParams {
     userId: string
 }
 
-export default function JoinButton({infoWindowSetter, infoWindowClose, event, userId}: JoinButtonParams){
+export default function JoinButton({infoWindowSetter, infoWindowClose, event, userId }: JoinButtonParams){
 
     const handleJoinEvent = () =>{ 
         const joinEvent = async () => {
@@ -32,23 +32,13 @@ export default function JoinButton({infoWindowSetter, infoWindowClose, event, us
     const handleDeleteEvent = () =>{ 
         const deleteEvent = async () => {
             const updatedEvent = await deleteEventById(event.id);
-
-            //Close the info Window
-            // TODO: need to fix the functionality upstream for event loading.
             infoWindowClose(false);
         }
         deleteEvent();
     };
-
-    if(event.attendance.includes(userId)){
-        if(event.owner === userId){
-            return (
-            <Box>
-                <Button variant='contained' color='warning' disabled>Un-Join Event!</Button>
-                <Button variant='contained' color='error' onClick={handleDeleteEvent}>Cancel Event</Button>
-            </Box>
-            );
-        }
+    if(event.owner === userId){
+        return <Button variant='contained' color='warning' onClick={handleDeleteEvent}>Cancel Event</Button>;
+    }else if(event.attendance.includes(userId)){        
         return <Button variant='contained' color='error' onClick={handleUnjoinEvent}>Un-Join Event</Button>;
     }else{
         return <Button variant='contained' color='success' onClick={handleJoinEvent}>Join Event</Button>;

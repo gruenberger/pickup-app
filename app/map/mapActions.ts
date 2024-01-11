@@ -4,7 +4,6 @@ import { Activities } from "@/lib/activities";
 import { db } from "@/lib/db";
 import { Event } from "@prisma/client";
 import { revalidatePath } from "next/cache";
-import { Pin } from '@vis.gl/react-google-maps';
 
 export interface EventMapSumm {
     id: number;
@@ -69,4 +68,5 @@ export async function deleteEventById(eventId: number){
             id: eventId
         }
     });
+    revalidatePath('/map');
 }

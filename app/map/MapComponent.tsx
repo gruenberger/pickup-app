@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Box, Button, CircularProgress, Paper, Typography } from "@mui/material";
 import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
 import { APIProvider, AdvancedMarker, Pin, Map, InfoWindow } from "@vis.gl/react-google-maps";
 import { User,Event } from "@prisma/client";
-import { getEventById } from "./mapActions";
+import { getEventById, getEvents } from "./mapActions";
 import { EventMapSumm } from "./mapActions";
-import { joinEventById } from "./mapActions";
 
 // Activity Icon imports
 import { getActivityIcon, getName } from "@/lib/activities";
@@ -19,19 +18,39 @@ interface MapComponentProps {
     center: google.maps.LatLngLiteral;
     zoom: number;
     user: User | undefined;
-    events: EventMapSumm[];
 }
 
 
 
-export function MapComponent({ center, zoom, user, events }: MapComponentProps) {
+export function MapComponent({ center, zoom, user }: MapComponentProps) {
     
     const [infoWindowEvent, setInfoWindowEvent] = useState<Event | null>();  
     const [infowindowShown, setInfowindowShown] = useState(false);
+    const [events, setEvents] = useState<EventMapSumm[]>();
+    const [error, setError] = useState();
+    const [loading, setLoading] = useState<boolean>(true);
+    
+    useEffect(() => {
+        const fetchEvents = async () => {
+            try {
+              const fetchedEvents = await getEvents(center);
+              setEvents(fetchedEvents);
+              console.log("in Map get events effect");
+            } catch (e: any) {
+              setError(e);
+            } finally {
+              setLoading(false);
+            }
+          };      
+          fetchEvents();
+    }, [events]);
 
-    // Will not load the component until events have been fetched.
-    if(!events){
+    if(loading){
         return <CircularProgress />;
+    }
+    
+    if(error){
+        return <Typography>Error Loading events on the map.</Typography>
     }
     const closeInfoWindow = () => setInfowindowShown(false);
 
