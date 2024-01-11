@@ -43,7 +43,7 @@ export function MapComponent({ center, zoom, user }: MapComponentProps) {
             }
           };      
           fetchEvents();
-    }, [events]);
+    }, []);
 
     if(loading){
         return <CircularProgress />;
