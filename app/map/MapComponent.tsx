@@ -1,56 +1,30 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
-import { Box, Button, CircularProgress, Paper, Typography } from "@mui/material";
+import  { useEffect, useContext, useState, useCallback } from "react";
+import { Box, CircularProgress, Paper, Typography } from "@mui/material";
 import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
 import { APIProvider, AdvancedMarker, Pin, Map, InfoWindow } from "@vis.gl/react-google-maps";
 import { User,Event } from "@prisma/client";
-import { getEventById, getEvents } from "./mapActions";
+import { getEventById, getEvents, getUser } from "./mapActions";
 import { EventMapSumm } from "./mapActions";
 
 // Activity Icon imports
 import { getActivityIcon, getName } from "@/lib/activities";
 import JoinButton from "./JoinButton";
 
+import { EventsContext } from "./page";
+import { useSession } from "next-auth/react";
 
 
-interface MapComponentProps {
-    center: google.maps.LatLngLiteral;
-    zoom: number;
-    user: User | undefined;
-}
-
-
-
-export function MapComponent({ center, zoom, user }: MapComponentProps) {
-    
+export function MapComponent() {
+    const session = useSession();
     const [infoWindowEvent, setInfoWindowEvent] = useState<Event | null>();  
     const [infowindowShown, setInfowindowShown] = useState(false);
-    const [events, setEvents] = useState<EventMapSumm[]>();
-    const [error, setError] = useState();
-    const [loading, setLoading] = useState<boolean>(true);
-    
-    useEffect(() => {
-        const fetchEvents = async () => {
-            try {
-              const fetchedEvents = await getEvents(center);
-              setEvents(fetchedEvents);
-              console.log("in Map get events effect");
-            } catch (e: any) {
-              setError(e);
-            } finally {
-              setLoading(false);
-            }
-          };      
-          fetchEvents();
-    }, []);
+    const { events, center } = useContext(EventsContext);
 
-    if(loading){
-        return <CircularProgress />;
-    }
     
-    if(error){
-        return <Typography>Error Loading events on the map.</Typography>
+    if(!events || !center){
+        return <CircularProgress />;
     }
     const closeInfoWindow = () => setInfowindowShown(false);
 
@@ -70,7 +44,7 @@ export function MapComponent({ center, zoom, user }: MapComponentProps) {
             <Paper elevation={6}>                    
                 <APIProvider apiKey={process.env.NEXT_PUBLIC_GMAPS_API_KEY as string}>
                     <div style={{height: '100vh', width: '100%'}}> 
-                    <Map  zoom={zoom} center={center} 
+                    <Map  zoom={16} center={center} 
                         mapId={process.env.NEXT_PUBLIC_GMAPS_MAP_ID}>
                             {events && events?.map((event)=>(
                                 <AdvancedMarker key={event.id} position={{lat:event.lat,lng:event.lng}} onClick={() =>handleInfoWindow(event)}>
@@ -103,12 +77,13 @@ export function MapComponent({ center, zoom, user }: MapComponentProps) {
                                         </Typography>
                                     </Box>
                                 )}
-                                {(user && infoWindowEvent) && (
-                                    <JoinButton infoWindowSetter={setInfoWindowEvent} event={infoWindowEvent} userId={user.id} infoWindowClose={setInfowindowShown} />
+                                {(infoWindowEvent) && (
+                                    <JoinButton infoWindowSetter={setInfoWindowEvent} event={infoWindowEvent} infoWindowClose={setInfowindowShown} />
                                 )}                     
                             </InfoWindow>                            
                             )}
                     </Map>
+                    
                     </div>
                 </APIProvider>
             </Paper>
