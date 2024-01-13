@@ -1,34 +1,29 @@
 "use client";
 
-import React, { useState } from "react";
+import  {  useContext, useState } from "react";
 import { Box, CircularProgress, Paper, Typography } from "@mui/material";
 import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
 import { APIProvider, AdvancedMarker, Pin, Map, InfoWindow } from "@vis.gl/react-google-maps";
-import { User,Event } from "@prisma/client";
-import { getEventById } from "./mapActions";
+import { Event } from "@prisma/client";
+import { getEventById, getEvents, getUser } from "./mapActions";
 import { EventMapSumm } from "./mapActions";
 
 // Activity Icon imports
 import { getActivityIcon, getName } from "@/lib/activities";
+import JoinButton from "./JoinButton";
+
+import { EventsContext } from "./mapContext";
+import { useSession } from "next-auth/react";
 
 
-
-interface MapComponentProps {
-    center: google.maps.LatLngLiteral;
-    zoom: number;
-    user: User | undefined;
-    events: EventMapSumm[];
-}
-
-
-
-export function MapComponent({ center, zoom, user, events }: MapComponentProps) {
-    
+export function MapComponent() {
+    const session = useSession();
     const [infoWindowEvent, setInfoWindowEvent] = useState<Event | null>();  
     const [infowindowShown, setInfowindowShown] = useState(false);
+    const { events, center } = useContext(EventsContext);
 
-    // Will not load the component until events have been fetched.
-    if(!events){
+    
+    if(!events || !center){
         return <CircularProgress />;
     }
     const closeInfoWindow = () => setInfowindowShown(false);
@@ -49,7 +44,7 @@ export function MapComponent({ center, zoom, user, events }: MapComponentProps) 
             <Paper elevation={6}>                    
                 <APIProvider apiKey={process.env.NEXT_PUBLIC_GMAPS_API_KEY as string}>
                     <div style={{height: '100vh', width: '100%'}}> 
-                    <Map  zoom={zoom} center={center} 
+                    <Map  zoom={12} center={center} 
                         mapId={process.env.NEXT_PUBLIC_GMAPS_MAP_ID}>
                             {events && events?.map((event)=>(
                                 <AdvancedMarker key={event.id} position={{lat:event.lat,lng:event.lng}} onClick={() =>handleInfoWindow(event)}>
@@ -77,11 +72,18 @@ export function MapComponent({ center, zoom, user, events }: MapComponentProps) 
                                         <Typography variant='body2'>
                                             {`Owner: ${infoWindowEvent.owner}`}
                                         </Typography>
+                                        <Typography variant='body2'>
+                                            {`Total Number Planning to Attend: ${infoWindowEvent.attendance.length}`}
+                                        </Typography>
                                     </Box>
-                                )}                                
+                                )}
+                                {(infoWindowEvent) && (
+                                    <JoinButton infoWindowSetter={setInfoWindowEvent} event={infoWindowEvent} infoWindowClose={setInfowindowShown} />
+                                )}                     
                             </InfoWindow>                            
                             )}
                     </Map>
+                    
                     </div>
                 </APIProvider>
             </Paper>

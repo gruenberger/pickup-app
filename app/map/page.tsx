@@ -1,38 +1,53 @@
-import { db } from "@/lib/db";
+'use client';
+
 import { MapComponent } from "./MapComponent";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../api/auth/[...nextauth]/authOptions";
-import { notFound } from "next/navigation";
-import { getEvents } from "./mapActions";
+import { EventMapSumm, getEvents, getUser } from "./mapActions";
+import {useEffect, useState} from 'react';
+import { useSession } from "next-auth/react";
+import { CircularProgress } from "@mui/material";
+import { EventsContext } from "./mapContext";
 
 const zoom = 14;
 
 export const revalidate = 10;
 
 
-export default async function PickupsMap() {
-    const session = await getServerSession(authOptions);
+
+
+export default function PickupsMap() {
     const dundalk = {lat:39.2365569,lng:-76.5031196};
-    
+    const [events, setEvents] = useState<EventMapSumm[]>([]);
+    const [loadingEvents, setLoadingEvents] = useState<boolean>(true);
+    const session = useSession();
+    const [center, setCenter ] = useState<google.maps.LatLngLiteral>({lat:39.2365569,lng:-76.5031196});
 
-    if(!session){
-        const events = await getEvents(dundalk);
-        return <MapComponent user={undefined} center={dundalk} zoom={zoom} events={events} />;
-    } else {
-        const user = await db.user.findFirst({
-            where: {
-                email: session?.user?.email,
-                name: session?.user?.name
+    useEffect(() =>{
+        const fetchEvents = async () =>{
+            const fetcheEvents = await getEvents(dundalk);
+            setEvents(fetcheEvents!);
+            setLoadingEvents(false);
+        };
+        
+        const fetchUser = async () =>{
+            if(session.status === 'authenticated'){
+                const fetchedUser = await getUser(session.data.user!.id);
+                if(fetchedUser){
+                    setCenter({lat: fetchedUser.homeCenter[0], lng: fetchedUser.homeCenter[1]});
+                }                
             }
-        });
-
-        if(!user){
-            return notFound();
-        }else{
-            const center: google.maps.LatLngLiteral = {lat: user.homeCenter[0],lng: user.homeCenter[1]};
-            const events = await getEvents(center);
-            return <MapComponent user={user} center={center} zoom={zoom} events={events} />
         }
+        fetchUser();
+        fetchEvents();
+    }, []);
+
+    if(loadingEvents){
+        return <CircularProgress />;
+    }else{
+        return (
+            <EventsContext.Provider value={{events,setEvents, center}}>
+                <MapComponent  />
+            </EventsContext.Provider>
+        );
     }
 }
 

@@ -38,7 +38,7 @@ export interface CreateEventFormData  {
   description: string;
   owner: string;
   activity: string;
-  attendance: [];
+  attendance: string[];
   lat: number;
   lng: number;
   createdAt: Date;
@@ -79,7 +79,7 @@ export default function EventForm({ user }: EventFormProps) {
          } =
         useGeolocated({
             positionOptions: {
-                enableHighAccuracy: false,
+                enableHighAccuracy: true,
             },
             userDecisionTimeout: 5000,
             watchLocationPermissionChange: true,
@@ -156,7 +156,7 @@ export default function EventForm({ user }: EventFormProps) {
             lng: latLng?.lng as number,
             owner: user.id,
             activity: activity.value,
-            attendance: [],
+            attendance: [user.id],
             createdAt: new Date(),
             startTime: startTime.toDate(),
             endTime: endTime.toDate()
@@ -182,117 +182,117 @@ export default function EventForm({ user }: EventFormProps) {
             <Box>
             <Grid container  spacing={2}>            
                 <Grid container xs={6}>
-                    <Paper sx={{flexGrow: 1}} elevation={6}>
+                    <Paper elevation={6}>
                         <Grid display="flex" justifyContent="center" xs={12}>
                             <Typography variant='h5'>
                                 Enter Event Information
                             </Typography>
                         </Grid>
-                    <Grid display="flex" justifyContent="center" xs={12}>
-                        <TextField
-                            label="Name"
-                            name="name"
-                            value={name}
-                            onChange={handleNameChange}
-                            margin="normal"
-                            helperText="Name your activity"
-                            required
-                        />
-                    </Grid>
-                    <Grid display="flex" justifyContent="center" xs={12}>
-                        <TextField
-                            id="activitySelect"
-                            name="activity"
-                            select
-                            margin="normal"
-                            onChange={handleActivityChange}
-                            required
-                            label="Activity"
-                            helperText="Please select the activity"
-                            value={activity.value}
-                        >
-                            {Activities.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
-                                {option.name}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </Grid>
-                    <Grid display="flex" justifyContent="center" xs={12}>
-                        <TextField
-                            label="Description"
-                            name="description"
-                            helperText="Describe the activity with a few details"
-                            value={description}
-                            onChange={handleDescriptionChange}
-                            fullWidth
-                            required
-                            margin="normal"
-                        />
-                    </Grid>
-                    <Grid display="flex" justifyContent="center" xs={12}>
-                        <TextField
-                            label="Latitude"
-                            name="lat"
-                            type="number"
-                            helperText="Latitude of the activity location"
-                            fullWidth
-                            required
-                            value={latLng.lat}
-                            margin="normal"
-                            InputLabelProps={{ shrink: true }}
-                            InputProps={{
-                                readOnly: true,
-                              }}
-                            
-                        />
-                        <TextField
-                            label="Longitude"
-                            name="lng"
-                            type="number"
-                            helperText="Longitude of the activity location"
-                            value={latLng.lng}
-                            fullWidth
-                            required
-                            margin="normal"
-                            InputLabelProps={{ shrink: true }}
-                            InputProps={{
-                                readOnly: true,
-                              }}
-                        />
-                    </Grid>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <Grid display="flex" justifyContent="center" xs={12}>
-                        <MobileDateTimePicker
-                            label="Start Time"
-                            value={startTime}
-                            disablePast
-                            formatDensity='spacious'
-                            onChange={(date) => handleStartTimeChange(date)}
-                            viewRenderers={{
-                                hours: renderTimeViewClock,
-                                minutes: renderTimeViewClock,
-                                seconds: null,
-                            }}
-                            sx={{marginTop: "16px", marginBottom: "8px"}}                 
-                        />
-                    </Grid>
-                    <Grid display="flex" justifyContent="center" xs={12}>
-                        <MobileDateTimePicker
-                            label="End Time"
-                            value={endTime}
-                            disablePast
-                            formatDensity='spacious'
-                            onChange={(date) => handleEndTimeChange(date)}
-                            viewRenderers={{
-                                hours: renderTimeViewClock,
-                                minutes: renderTimeViewClock,
-                                seconds: null,
-                            }}
-                            sx={{marginTop: "16px", marginBottom: "8px"}}
-                        />
-                    </Grid>
-                    </LocalizationProvider>
+                        <Grid display="flex" justifyContent="center" xs={12}>
+                            <TextField
+                                label="Name"
+                                name="name"
+                                value={name}
+                                onChange={handleNameChange}
+                                margin="normal"
+                                helperText="Name your activity"
+                                required
+                            />
+                        </Grid>
+                        <Grid display="flex" justifyContent="center" xs={12}>
+                            <TextField
+                                id="activitySelect"
+                                name="activity"
+                                select
+                                margin="normal"
+                                onChange={handleActivityChange}
+                                required
+                                label="Activity"
+                                helperText="Please select the activity"
+                                value={activity.value}
+                            >
+                                {Activities.map((option) => (
+                                    <MenuItem key={option.value} value={option.value}>
+                                    {option.name}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                        </Grid>
+                        <Grid display="flex" justifyContent="center" xs={12}>
+                            <TextField
+                                label="Description"
+                                name="description"
+                                helperText="Describe the activity with a few details"
+                                value={description}
+                                onChange={handleDescriptionChange}
+                                fullWidth
+                                required
+                                margin="normal"
+                            />
+                        </Grid>
+                        <Grid display="flex" justifyContent="center" xs={12}>
+                            <TextField
+                                label="Latitude"
+                                name="lat"
+                                type="number"
+                                helperText="Latitude of the activity location"
+                                fullWidth
+                                required
+                                value={latLng.lat}
+                                margin="normal"
+                                InputLabelProps={{ shrink: true }}
+                                InputProps={{
+                                    readOnly: true,
+                                }}
+                                
+                            />
+                            <TextField
+                                label="Longitude"
+                                name="lng"
+                                type="number"
+                                helperText="Longitude of the activity location"
+                                value={latLng.lng}
+                                fullWidth
+                                required
+                                margin="normal"
+                                InputLabelProps={{ shrink: true }}
+                                InputProps={{
+                                    readOnly: true,
+                                }}
+                            />
+                        </Grid>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <Grid display="flex" justifyContent="center" xs={12}>
+                            <MobileDateTimePicker
+                                label="Start Time"
+                                value={startTime}
+                                disablePast
+                                formatDensity='spacious'
+                                onChange={(date) => handleStartTimeChange(date)}
+                                viewRenderers={{
+                                    hours: renderTimeViewClock,
+                                    minutes: renderTimeViewClock,
+                                    seconds: null,
+                                }}
+                                sx={{marginTop: "16px", marginBottom: "8px"}}                 
+                            />
+                        </Grid>
+                        <Grid display="flex" justifyContent="center" xs={12}>
+                            <MobileDateTimePicker
+                                label="End Time"
+                                value={endTime}
+                                disablePast
+                                formatDensity='spacious'
+                                onChange={(date) => handleEndTimeChange(date)}
+                                viewRenderers={{
+                                    hours: renderTimeViewClock,
+                                    minutes: renderTimeViewClock,
+                                    seconds: null,
+                                }}
+                                sx={{marginTop: "16px", marginBottom: "8px"}}
+                            />
+                        </Grid>
+                        </LocalizationProvider>
                         <Grid display="flex" justifyContent="center" xs={12}>
                             <Button onClick={handleSubmit} variant="contained" color="primary">
                                 Create Event

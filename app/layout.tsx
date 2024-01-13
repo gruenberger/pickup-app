@@ -1,16 +1,19 @@
 import type { Metadata } from 'next'
 
-import '@fontsource/roboto/300.css';
-import '@fontsource/roboto/400.css';
-import '@fontsource/roboto/500.css';
-import '@fontsource/roboto/700.css';
+import { Inter } from 'next/font/google'
+
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  preload: true
+})
+
 import Navbar from './navbar';
 import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
 
-import SessionProvider from './components/SessionProvider';
-import { getServerSession } from 'next-auth';
-import { authOptions } from './api/auth/[...nextauth]/authOptions';
+import Providers from './providers';
 import Box from '@mui/material/Box';
+
 
 export const metadata: Metadata = {
   title: 'Pickup App',
@@ -22,11 +25,10 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const session = await getServerSession(authOptions);
   return (
-      <html lang="en">
+      <html lang="en" className={inter.className}>
         <body style={{backgroundColor:"#F3F6F9" }}>
-          <SessionProvider session={session}>
+          <Providers>
             <Box sx={{ flexGrow: 1}}>
               <Grid container spacing={2}>
                 <Grid xs={12} >
@@ -37,7 +39,7 @@ export default async function RootLayout({
                 </Grid>
               </Grid>
             </Box>
-          </SessionProvider>
+          </Providers>
         </body>
       </html>
   )

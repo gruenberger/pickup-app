@@ -1,16 +1,12 @@
 import * as React from 'react';
-import { getServerSession } from 'next-auth';
-import { authOptions } from './api/auth/[...nextauth]/authOptions';
+import { auth } from '@/auth';
 
 
 export default async function Home() {
-  const user = await getServerSession(authOptions)
-    .then((session) =>{
-      return session?.user;
-    });
+  const session = await auth();
 
-  if(user){
-    return <h2>Hello, {user?.name}. Welcome to Pickup App.</h2>;
+  if(session){
+    return <h2>Hello, {session.user?.name}. Welcome to Pickup App.</h2>;
   } else{
     return <h2>Welcome to Pickup App.</h2>;
   }

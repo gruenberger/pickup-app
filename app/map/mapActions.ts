@@ -4,7 +4,6 @@ import { Activities } from "@/lib/activities";
 import { db } from "@/lib/db";
 import { Event } from "@prisma/client";
 import { revalidatePath } from "next/cache";
-import { Pin } from '@vis.gl/react-google-maps';
 
 export interface EventMapSumm {
     id: number;
@@ -33,4 +32,50 @@ export async function getEventById(eventId: number) {
     });
 
     return event as Event;
+}
+
+export async function joinEventById(event: Event, userId: string){
+    let newAttendance = event.attendance;
+    newAttendance.push(userId);
+    const returnVal = await db.event.update({
+        where: {id: event.id},
+        data:{
+            ...event,
+            attendance: newAttendance
+        }
+    });
+    return returnVal;
+}
+
+export async function unjoinEventById(event: Event, userId: string){
+    let newAttendance = event.attendance;
+    newAttendance = newAttendance.filter((attendee)=>{
+        return attendee !== userId;
+    });
+    const returnVal = await db.event.update({
+        where: {id: event.id},
+        data:{
+            ...event,
+            attendance: newAttendance
+        }
+    });
+    return returnVal;
+}
+
+export async function deleteEventById(eventId: number){
+    const deleted = await db.event.delete({
+        where: {
+            id: eventId
+        }
+    });
+    revalidatePath('/map');
+}
+
+export async function getUser(userId: string){
+    const user = await db.user.findUnique({
+        where:{
+            id: userId
+        }
+    });
+    return user;
 }
