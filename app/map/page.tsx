@@ -1,29 +1,17 @@
 'use client';
 
-import { db } from "@/lib/db";
 import { MapComponent } from "./MapComponent";
-import { notFound } from "next/navigation";
 import { EventMapSumm, getEvents, getUser } from "./mapActions";
-import { auth } from "@/auth";
-import {createContext, useContext, useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import { useSession } from "next-auth/react";
-import { User } from "@prisma/client";
 import { CircularProgress } from "@mui/material";
+import { EventsContext } from "./mapContext";
 
 const zoom = 14;
 
 export const revalidate = 10;
 
-export interface EventsContextType {
-    events: EventMapSumm[];
-    setEvents: React.Dispatch<React.SetStateAction<EventMapSumm[]>>;
-    center: google.maps.LatLngLiteral;
-  }
-export const EventsContext = createContext<EventsContextType>({
-    events: [],
-    setEvents: () =>{},
-    center: {lat:39.2365569,lng:-76.5031196}
-});
+
 
 
 export default function PickupsMap() {

@@ -1,10 +1,10 @@
 "use client";
 
-import  { useEffect, useContext, useState, useCallback } from "react";
+import  {  useContext, useState } from "react";
 import { Box, CircularProgress, Paper, Typography } from "@mui/material";
 import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
 import { APIProvider, AdvancedMarker, Pin, Map, InfoWindow } from "@vis.gl/react-google-maps";
-import { User,Event } from "@prisma/client";
+import { Event } from "@prisma/client";
 import { getEventById, getEvents, getUser } from "./mapActions";
 import { EventMapSumm } from "./mapActions";
 
@@ -12,7 +12,7 @@ import { EventMapSumm } from "./mapActions";
 import { getActivityIcon, getName } from "@/lib/activities";
 import JoinButton from "./JoinButton";
 
-import { EventsContext } from "./page";
+import { EventsContext } from "./mapContext";
 import { useSession } from "next-auth/react";
 
 
@@ -44,7 +44,7 @@ export function MapComponent() {
             <Paper elevation={6}>                    
                 <APIProvider apiKey={process.env.NEXT_PUBLIC_GMAPS_API_KEY as string}>
                     <div style={{height: '100vh', width: '100%'}}> 
-                    <Map  zoom={16} center={center} 
+                    <Map  zoom={12} center={center} 
                         mapId={process.env.NEXT_PUBLIC_GMAPS_MAP_ID}>
                             {events && events?.map((event)=>(
                                 <AdvancedMarker key={event.id} position={{lat:event.lat,lng:event.lng}} onClick={() =>handleInfoWindow(event)}>

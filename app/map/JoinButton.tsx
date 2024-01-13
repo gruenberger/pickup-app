@@ -3,9 +3,8 @@
 import { Button } from "@mui/material";
 import { Event, User } from "@prisma/client";
 import { EventMapSumm, deleteEventById, getEvents, getUser, joinEventById, unjoinEventById } from "./mapActions";
-import { EventsContextType } from "./page";
 import { useContext, useEffect, useState } from "react";
-import { EventsContext } from "./page";
+import { EventsContext, EventsContextType } from "./mapContext";
 import { useSession } from "next-auth/react";
 
 interface JoinButtonParams {
