@@ -67,7 +67,7 @@ export function MapComponent() {
                                             {`Description: ${infoWindowEvent.description}`}
                                         </Typography>
                                         <Typography variant='body2'>
-                                            {`Starts at: ${infoWindowEvent.startTime.toLocaleTimeString()}`}
+                                            {`Starts at: ${infoWindowEvent.startTime.toLocaleDateString()} at ${infoWindowEvent.startTime.toLocaleTimeString()}`}
                                         </Typography>
                                         <Typography variant='body2'>
                                             {`Owner: ${infoWindowEvent.owner}`}
