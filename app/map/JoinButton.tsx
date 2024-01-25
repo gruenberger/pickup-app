@@ -2,31 +2,18 @@
 
 import { Button } from "@mui/material";
 import { Event, User } from "@prisma/client";
-import { EventMapSumm, deleteEventById, getEvents, getUser, joinEventById, unjoinEventById } from "./mapActions";
-import { useContext, useEffect, useState } from "react";
-import { EventsContext, EventsContextType } from "./mapContext";
-import { useSession } from "next-auth/react";
+import { deleteEventById, getEvents, getUser, joinEventById, unjoinEventById } from "./mapActions";
 
 interface JoinButtonParams {
-    infoWindowSetter: Function
-    infoWindowClose: Function
-    event: Event
+    infoWindowSetter: Function;
+    infoWindowClose: Function;
+    setEvents: Function;
+    event: Event;
+    user: User;
 }
 
-export default function JoinButton({infoWindowSetter, infoWindowClose, event }: JoinButtonParams){
-    const { events, setEvents }: EventsContextType = useContext(EventsContext);
-    const session = useSession();
-    const [user, setUser] = useState<User|null>();
-
-    useEffect(() => {
-        if(session){
-            const fetchUser =  async () =>{
-                const fetchedUser = await getUser(session.data!.user!.id);
-                setUser(fetchedUser);
-            };
-            fetchUser();
-        }
-    });
+export default function JoinButton({infoWindowSetter, infoWindowClose, event, user, setEvents }: JoinButtonParams){
+    
 
     if(!user){
         return;

@@ -1,31 +1,30 @@
 "use client";
 
-import  {  useContext, useState } from "react";
-import { Box, CircularProgress, Paper, Typography } from "@mui/material";
+import  { useState } from "react";
+import { Box, Paper, Typography } from "@mui/material";
 import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
 import { APIProvider, AdvancedMarker, Pin, Map, InfoWindow } from "@vis.gl/react-google-maps";
-import { Event } from "@prisma/client";
-import { getEventById, getEvents, getUser } from "./mapActions";
+import { Event, User } from "@prisma/client";
+import { getEventById } from "./mapActions";
 import { EventMapSumm } from "./mapActions";
 
 // Activity Icon imports
 import { getActivityIcon, getName } from "@/lib/activities";
 import JoinButton from "./JoinButton";
 
-import { EventsContext } from "./mapContext";
-import { useSession } from "next-auth/react";
+export interface MapComponentProps {
+    events: EventMapSumm[];
+    user: User | undefined;    
+}
 
-
-export function MapComponent() {
-    const session = useSession();
+export function MapComponent({events, user}: MapComponentProps) {
     const [infoWindowEvent, setInfoWindowEvent] = useState<Event | null>();  
     const [infowindowShown, setInfowindowShown] = useState(false);
-    const { events, center } = useContext(EventsContext);
+    const [clientEvents, setEvents] = useState(events);
 
+    const center: google.maps.LatLngLiteral = user? {lat:user.homeCenter[0], lng:user.homeCenter[1]}: {lat: 0, lng: 0};
     
-    if(!events || !center){
-        return <CircularProgress />;
-    }
+    
     const closeInfoWindow = () => setInfowindowShown(false);
 
     // When the info window opens, fetch the event info
@@ -46,7 +45,7 @@ export function MapComponent() {
                     <div style={{height: '100vh', width: '100%'}}> 
                     <Map  zoom={12} center={center} 
                         mapId={process.env.NEXT_PUBLIC_GMAPS_MAP_ID}>
-                            {events && events?.map((event)=>(
+                            {clientEvents && clientEvents?.map((event)=>(
                                 <AdvancedMarker key={event.id} position={{lat:event.lat,lng:event.lng}} onClick={() =>handleInfoWindow(event)}>
                                     <Pin background={'white'} borderColor={'#1976d2'}>
                                         {getActivityIcon(event.activity)}
@@ -77,8 +76,14 @@ export function MapComponent() {
                                         </Typography>
                                     </Box>
                                 )}
-                                {(infoWindowEvent) && (
-                                    <JoinButton infoWindowSetter={setInfoWindowEvent} event={infoWindowEvent} infoWindowClose={setInfowindowShown} />
+                                {(infoWindowEvent && user) && (
+                                    <JoinButton 
+                                        infoWindowSetter={setInfoWindowEvent}
+                                        event={infoWindowEvent}
+                                        infoWindowClose={setInfowindowShown}
+                                        user={user}
+                                        setEvents={setEvents}
+                                        />
                                 )}                     
                             </InfoWindow>                            
                             )}
