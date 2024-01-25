@@ -12,7 +12,7 @@ export interface EventMapSumm {
     activity: string;
 }
 
-export async function getEvents(center: google.maps.LatLngLiteral) {
+export async function getEvents(center: google.maps.LatLngLiteral | null) {
     const events: EventMapSumm[] = (await db.event.findMany())
         .map((event) =>{
             return {

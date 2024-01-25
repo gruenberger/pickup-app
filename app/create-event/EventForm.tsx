@@ -129,13 +129,13 @@ export default function EventForm({ user }: EventFormProps) {
 
     const handleStartTimeChange = (date: Dayjs | null) => {
         if (date) {
-        setStartTime(date);
+            setStartTime(date);
         }
     };
 
     const handleEndTimeChange = (date: Dayjs | null) => {
         if (date) {
-        setEndTime(date);
+            setEndTime(date);
         }
     };
 
@@ -165,7 +165,7 @@ export default function EventForm({ user }: EventFormProps) {
         createEvent(newEvent).then((event) =>{
             setId(event.id);
             setEventName(event.name);
-            console.log(`Returned Promise for: \n ${event}`);
+            console.log(`DATE: ${event.startTime}`);
             handleOpen();
         });
         
@@ -329,7 +329,7 @@ export default function EventForm({ user }: EventFormProps) {
                         Creation Complete
                     </Typography>
                     <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                        Your Event,{eventName} was created with id, {id}. Thank you for using the application.
+                        Your Event, {eventName}, was created with id, {id}. Thank you for using the application.
                     </Typography>
                 </Box>
             </Modal>
