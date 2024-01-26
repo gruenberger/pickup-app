@@ -1,7 +1,7 @@
 "use client";
 
 import  { useState } from "react";
-import { Box, Paper, Typography } from "@mui/material";
+import { Box, FormControl, InputLabel, MenuItem, Paper, Select, SelectChangeEvent, Typography } from "@mui/material";
 import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
 import { APIProvider, AdvancedMarker, Pin, Map, InfoWindow } from "@vis.gl/react-google-maps";
 import { Event, User } from "@prisma/client";
@@ -9,7 +9,7 @@ import { getEventById } from "./mapActions";
 import { EventMapSumm } from "./mapActions";
 
 // Activity Icon imports
-import { getActivityIcon, getName } from "@/lib/activities";
+import { Activities, getActivityIcon, getName } from "@/lib/activities";
 import JoinButton from "./JoinButton";
 
 export interface MapComponentProps {
@@ -21,6 +21,7 @@ export function MapComponent({events, user}: MapComponentProps) {
     const [infoWindowEvent, setInfoWindowEvent] = useState<Event | null>();  
     const [infowindowShown, setInfowindowShown] = useState(false);
     const [clientEvents, setEvents] = useState(events);
+    const [activityFilter, setActivityFilter] = useState("All");
 
     const center: google.maps.LatLngLiteral = user? {lat:user.homeCenter[0], lng:user.homeCenter[1]}: {lat: 0, lng: 0};
     
@@ -37,13 +38,44 @@ export function MapComponent({events, user}: MapComponentProps) {
         fetchEventById();
     };
 
+    // Activity Filter change handler
+    const handleActivityFilterChange = (event: SelectChangeEvent) => {
+        const activity = event.target.value;
+        if (activity === "All"){
+            setActivityFilter(activity);
+            setEvents(events);
+        }else{
+            setActivityFilter(activity);
+            setEvents(events.filter((e) => e.activity === activity));
+        }        
+    };
+
     return (
         <Grid container>
+            <Grid xs={12}>
+                <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                    <InputLabel id="activity-filter-label">Activity</InputLabel>
+                    <Select
+                        labelId="activity-filter-label"
+                        id="activity-filter"
+                        value={activityFilter}
+                        label="Activity"
+                        onChange={handleActivityFilterChange}
+                    >
+                        <MenuItem key="all" value="All">All</MenuItem>
+                        {Activities.map((option) => (
+                                    <MenuItem key={option.value} value={option.value}>
+                                    {option.name}
+                                    </MenuItem>
+                                ))}
+                    </Select>
+                </FormControl>
+            </Grid>
             <Grid xs={12}>
             <Paper elevation={6}>                    
                 <APIProvider apiKey={process.env.NEXT_PUBLIC_GMAPS_API_KEY as string}>
                     <div style={{height: '100vh', width: '100%'}}> 
-                    <Map  zoom={12} center={center} 
+                    <Map  zoom={16} center={center} 
                         mapId={process.env.NEXT_PUBLIC_GMAPS_MAP_ID}>
                             {clientEvents && clientEvents?.map((event)=>(
                                 <AdvancedMarker key={event.id} position={{lat:event.lat,lng:event.lng}} onClick={() =>handleInfoWindow(event)}>
