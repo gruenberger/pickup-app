@@ -26,3 +26,23 @@ export async function getEventsAttended(userId: string){
     
     return attendedEvents;
 }
+
+export async function getFriendsList(userId: string) {
+  const friendsList = await db.user.findUnique({
+    where: {
+      id: userId
+    },
+    select: {
+      friends: true
+    }
+  }).then(result => result?.friends);
+
+  return friendsList;
+}
+
+export async function getFriendsListStub(userId: string) {
+
+  return ["Brian", "Drew", "Obamaa"];
+}
+
+
