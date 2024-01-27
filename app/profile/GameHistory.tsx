@@ -3,7 +3,7 @@
 import { Paper, Accordion, AccordionSummary, Typography, AccordionDetails, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, CircularProgress } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Event } from "@prisma/client";
-import { getEventsCreated, getEventsAttended } from "./profileActions";
+import { getEventsCreated, getEventsAttended, getFriendsList, getFriendsListStub } from "./profileActions";
 import { useEffect, useState } from "react";
 
 export interface GameHistoryProps {
@@ -13,6 +13,7 @@ export default function GameHistoryComponent({userId}: GameHistoryProps) {
     
     const [createdGames, setCreatedGames] = useState<Event[]>([]);
     const [attendedGames, setAttendedGames] = useState<Event[]>([]);
+    const [friendsList, setFriendsList] = useState<string[]>();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -21,8 +22,10 @@ export default function GameHistoryComponent({userId}: GameHistoryProps) {
             try {
               const fetchedAttended = await getEventsAttended(userId);
               const fetchedCreated = await getEventsCreated(userId);
+              const fetchFriendsList = await getFriendsListStub(userId);
               setCreatedGames(fetchedCreated);
               setAttendedGames(fetchedAttended);
+              setFriendsList(fetchFriendsList);
             } catch (e: any) {
               setError(e);
             } finally {
@@ -127,6 +130,27 @@ export default function GameHistoryComponent({userId}: GameHistoryProps) {
                     <Typography>
                         Friends Here
                     </Typography>
+                    <TableContainer component={Paper} >
+                        <Table sx={{ minWidth: 650}} aria-label={`Friends of User ${userId}`}>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>UserName</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {(friendsList)?.map((friend) => (
+                                    <TableRow
+                                    key={friend}
+                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                    >
+                                    <TableCell component="th" scope="row">
+                                        {friend}
+                                    </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
                 </AccordionDetails>
             </Accordion>                            
         </Paper>
