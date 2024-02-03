@@ -138,7 +138,7 @@ export default function GameHistoryComponent({userId}: GameHistoryProps) {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {(friendsList)?.map((friend) => (
+                                {(friendsList)?.map( (friend) => (
                                     <TableRow
                                     key={friend}
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
