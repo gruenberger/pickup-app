@@ -30,3 +30,7 @@ export async function getProfilesStub(query: String){
     return ["Andrew", "brian", "kevin"];
 }
 
+/* export function sendFriendRequest(userId: string, friendId: string) {
+   
+}
+ */
