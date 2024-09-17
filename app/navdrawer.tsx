@@ -14,6 +14,7 @@ import MapIcon from '@mui/icons-material/Map';
 import EventIcon from '@mui/icons-material/Event';
 import PersonIcon from '@mui/icons-material/Person';
 import SettingsIcon from '@mui/icons-material/Settings';
+import PeopleIcon from '@mui/icons-material/People'
 import Link from 'next/link';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
@@ -22,6 +23,7 @@ const LINKS = [
   {href: 'map', icon: <MapIcon />, text: 'Map'},
   {href: 'create-event', icon: <EventIcon />, text: 'Create Event'},
   {href: 'profile', icon: <PersonIcon />, text: 'Profile'},
+  {href: 'add-friend', icon: <PeopleIcon />, text: 'Add Friend'},
   {href: 'settings', icon: <SettingsIcon />, text: 'Settings'}
 ]
 
