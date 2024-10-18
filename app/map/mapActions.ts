@@ -4,27 +4,32 @@ import { Activities } from "@/lib/activities";
 import { db } from "@/lib/db";
 import { Event } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { cache } from "react";
 
 export interface EventMapSumm {
     id: number;
     lat: number;
     lng: number;
     activity: string;
+    startTime: Date;
+    endTime: Date;
 }
 
-export async function getEvents(center: google.maps.LatLngLiteral | null) {
+export const getEvents = cache(async(center: google.maps.LatLngLiteral | null) =>{
     const events: EventMapSumm[] = (await db.event.findMany())
         .map((event) =>{
             return {
                 id: event.id,
                 lat: event.lat,
                 lng: event.lng,
-                activity: event.activity
+                activity: event.activity,
+                startTime: event.startTime,
+                endTime: event.endTime
             }
         });
     revalidatePath('/map');
     return events;
-}
+});
 
 export async function getEventById(eventId: number) {
     const event: Event | null = await db.event.findUnique({
@@ -71,11 +76,11 @@ export async function deleteEventById(eventId: number){
     revalidatePath('/map');
 }
 
-export async function getUser(userId: string){
+export const getUser = cache(async (userId: string)=>{
     const user = await db.user.findUnique({
         where:{
             id: userId
         }
     });
     return user;
-}
+});

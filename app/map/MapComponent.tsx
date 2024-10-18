@@ -11,6 +11,17 @@ import { EventMapSumm } from "./mapActions";
 // Activity Icon imports
 import { Activities, getActivityIcon, getName } from "@/lib/activities";
 import JoinButton from "./JoinButton";
+import 'dayjs/locale/en'; // import locale
+import { renderTimeViewClock } from '@mui/x-date-pickers/timeViewRenderers';
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { MobileDateTimePicker } from "@mui/x-date-pickers/MobileDateTimePicker";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+
+// DayJS
+import dayjs, { Dayjs } from 'dayjs';
+import isLeapYear from 'dayjs/plugin/isLeapYear';
+dayjs.extend(isLeapYear) // use plugin
+dayjs.locale('en') // use locale
 
 export interface MapComponentProps {
     events: EventMapSumm[];
@@ -22,6 +33,8 @@ export function MapComponent({events, user}: MapComponentProps) {
     const [infowindowShown, setInfowindowShown] = useState(false);
     const [clientEvents, setEvents] = useState(events);
     const [activityFilter, setActivityFilter] = useState("All");
+    const [startTimeRangeValue, setStartTimeRangeValue] = useState<Dayjs>(dayjs());
+    const [endTimeRangeValue, setEndTimeRangeValue] = useState<Dayjs>(dayjs().add(12, 'hour'))
 
     const center: google.maps.LatLngLiteral = user? {lat:user.homeCenter[0], lng:user.homeCenter[1]}: {lat: 0, lng: 0};
     
@@ -50,9 +63,29 @@ export function MapComponent({events, user}: MapComponentProps) {
         }        
     };
 
+    const handleStartTimeRangeChange = (newStartTime: Dayjs | null): void => {
+        if (newStartTime) {
+            setStartTimeRangeValue(newStartTime);
+            if (newStartTime.isAfter(endTimeRangeValue)) {
+                setEndTimeRangeValue(newStartTime .add(12, 'hour'));
+            }
+            // Filter events by start time
+            setEvents(clientEvents.filter((event) => event.startTime >= newStartTime.toDate()));
+        }
+    };
+
+    const handleEndTimeRangeChange = (newEndTime: Dayjs | null): void => {
+        if (newEndTime) {
+            setEndTimeRangeValue(newEndTime);
+            // Filter events by end time
+            setEvents(clientEvents.filter((event) => event.endTime <= newEndTime.toDate()));
+        }
+    }
+
     return (
         <Grid container>
             <Grid xs={12}>
+                <Grid xs={4}>
                 <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
                     <InputLabel id="activity-filter-label">Activity</InputLabel>
                     <Select
@@ -70,6 +103,39 @@ export function MapComponent({events, user}: MapComponentProps) {
                                 ))}
                     </Select>
                 </FormControl>
+                </Grid>
+                <Grid xs={8}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <Grid display="flex" justifyContent="center" xs={12}>
+                            <MobileDateTimePicker
+                                label="Start Time"
+                                value={startTimeRangeValue}
+                                disablePast
+                                formatDensity='spacious'
+                                onChange={(date) => handleStartTimeRangeChange(date)}
+                                viewRenderers={{
+                                    hours: renderTimeViewClock,
+                                    minutes: renderTimeViewClock,
+                                    seconds: null,
+                                }}
+                                sx={{marginTop: "16px", marginBottom: "8px"}}                 
+                            />
+                            <MobileDateTimePicker
+                                label="End Time Range"
+                                value={endTimeRangeValue}
+                                disablePast
+                                formatDensity='spacious'
+                                onChange={(date) => handleEndTimeRangeChange(date)}
+                                viewRenderers={{
+                                    hours: renderTimeViewClock,
+                                    minutes: renderTimeViewClock,
+                                    seconds: null,
+                                }}
+                                sx={{marginTop: "16px", marginBottom: "8px"}}                 
+                            />
+                        </Grid>
+                    </LocalizationProvider>
+                </Grid>
             </Grid>
             <Grid xs={12}>
             <Paper elevation={6}>                    
