@@ -20,8 +20,13 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 // DayJS
 import dayjs, { Dayjs } from 'dayjs';
 import isLeapYear from 'dayjs/plugin/isLeapYear';
-dayjs.extend(isLeapYear) // use plugin
-dayjs.locale('en') // use locale
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(isLeapYear); // use plugin
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.locale('en'); // use locale
 
 export interface MapComponentProps {
     events: EventMapSumm[];
@@ -67,10 +72,14 @@ export function MapComponent({events, user}: MapComponentProps) {
         if (newStartTime) {
             setStartTimeRangeValue(newStartTime);
             if (newStartTime.isAfter(endTimeRangeValue)) {
-                setEndTimeRangeValue(newStartTime .add(12, 'hour'));
+                setEndTimeRangeValue(newStartTime.add(12, 'hour'));
             }
             // Filter events by start time
-            setEvents(clientEvents.filter((event) => event.startTime >= newStartTime.toDate()));
+            let possibleEvents = events.filter((event) =>  event.startTime >= newStartTime.utc().toDate())
+                .filter((event) => event.endTime <= endTimeRangeValue.utc().toDate())
+                .filter((event) => event.activity === activityFilter);
+            console.log(possibleEvents);
+            setEvents(possibleEvents);
         }
     };
 
@@ -78,14 +87,17 @@ export function MapComponent({events, user}: MapComponentProps) {
         if (newEndTime) {
             setEndTimeRangeValue(newEndTime);
             // Filter events by end time
-            setEvents(clientEvents.filter((event) => event.endTime <= newEndTime.toDate()));
+            let possibleEvents = events.filter((event) => event.endTime <= newEndTime.utc().toDate())
+                .filter((event) =>  event.startTime >= startTimeRangeValue.utc().toDate())
+               .filter((event) => event.activity === activityFilter);
+            console.log(possibleEvents);
+            setEvents(possibleEvents);
         }
     }
 
     return (
         <Grid container>
-            <Grid xs={12}>
-                <Grid xs={4}>
+            <Grid xs={1}>
                 <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
                     <InputLabel id="activity-filter-label">Activity</InputLabel>
                     <Select
@@ -102,43 +114,40 @@ export function MapComponent({events, user}: MapComponentProps) {
                                     </MenuItem>
                                 ))}
                     </Select>
-                </FormControl>
-                </Grid>
-                <Grid xs={8}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <Grid display="flex" justifyContent="center" xs={12}>
-                            <MobileDateTimePicker
-                                label="Start Time"
-                                value={startTimeRangeValue}
-                                disablePast
-                                formatDensity='spacious'
-                                onChange={(date) => handleStartTimeRangeChange(date)}
-                                viewRenderers={{
-                                    hours: renderTimeViewClock,
-                                    minutes: renderTimeViewClock,
-                                    seconds: null,
-                                }}
-                                sx={{marginTop: "16px", marginBottom: "8px"}}                 
-                            />
-                            <MobileDateTimePicker
-                                label="End Time Range"
-                                value={endTimeRangeValue}
-                                disablePast
-                                formatDensity='spacious'
-                                onChange={(date) => handleEndTimeRangeChange(date)}
-                                viewRenderers={{
-                                    hours: renderTimeViewClock,
-                                    minutes: renderTimeViewClock,
-                                    seconds: null,
-                                }}
-                                sx={{marginTop: "16px", marginBottom: "8px"}}                 
-                            />
-                        </Grid>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>                        
+                        <MobileDateTimePicker
+                            label="Start Time"
+                            value={startTimeRangeValue}
+                            disablePast
+                            formatDensity='spacious'
+                            timezone='UTC'
+                            onChange={(date) => handleStartTimeRangeChange(date)}
+                            viewRenderers={{
+                                hours: renderTimeViewClock,
+                                minutes: renderTimeViewClock,
+                                seconds: null,
+                            }}
+                            sx={{marginTop: "16px", marginBottom: "8px"}}                 
+                        />
+                        <MobileDateTimePicker
+                            label="End Time Range"
+                            value={endTimeRangeValue}
+                            disablePast
+                            timezone='UTC'
+                            formatDensity='spacious'
+                            onChange={(date) => handleEndTimeRangeChange(date)}
+                            viewRenderers={{
+                                hours: renderTimeViewClock,
+                                minutes: renderTimeViewClock,
+                                seconds: null,
+                            }}
+                            sx={{marginTop: "16px", marginBottom: "8px"}}                 
+                        />                        
                     </LocalizationProvider>
-                </Grid>
+                </FormControl>
             </Grid>
-            <Grid xs={12}>
-            <Paper elevation={6}>                    
+            <Grid xs={11}>
+                <Paper elevation={6}>                    
                 <APIProvider apiKey={process.env.NEXT_PUBLIC_GMAPS_API_KEY as string}>
                     <div style={{height: '100vh', width: '100%'}}> 
                     <Map  zoom={16} center={center} 

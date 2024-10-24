@@ -23,9 +23,9 @@ model Event {
   owner       String
   attendance  String[]                @default([])
   activity    String               @db.VarChar(100)
-  createdAt   DateTime             @default(now()) @db.Timestamp(6)
-  startTime   DateTime             @db.Timestamp()
-  endTime     DateTime             @db.Timestamp()
+  createdAt   DateTime             @default(now()) @db.Timestamptz(3)
+  startTime   DateTime             @db.Timestamptz(3)
+  endTime     DateTime             @db.Timestamptz(3)
   User        User                 @relation(fields: [owner], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "owner_fkey")
 }
 
