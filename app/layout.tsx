@@ -9,7 +9,7 @@ const inter = Inter({
 })
 
 import Navbar from './navbar';
-import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
+import Grid from '@mui/material/Grid2'; // Grid version 2
 
 import Providers from './providers';
 import Box from '@mui/material/Box';
@@ -31,10 +31,10 @@ export default async function RootLayout({
           <Providers>
             <Box sx={{ flexGrow: 1}}>
               <Grid container spacing={2}>
-                <Grid xs={12} >
+                <Grid size={12} >
                   <Navbar />
                 </Grid>
-                <Grid xs={12}>    
+                <Grid size={12}>    
                   {children}
                 </Grid>
               </Grid>

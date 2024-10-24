@@ -1,7 +1,7 @@
 'use client';
 
 import { User } from "@prisma/client"
-import Grid from "@mui/material/Unstable_Grid2";
+import Grid from "@mui/material/Grid2";
 import { APIProvider, AdvancedMarker, Map, Pin } from "@vis.gl/react-google-maps";
 import { useGeolocated } from "react-geolocated";
 import { Snackbar, Tooltip, Typography } from "@mui/material";
@@ -54,7 +54,7 @@ export default function ProfileHomeSelectComponent({user, updateLocation}: Profi
 
     return (         
         <Grid container>
-            <Grid xs={12}>
+            <Grid size={12}>
             {coords ? (
                 <APIProvider apiKey={process.env.NEXT_PUBLIC_GMAPS_API_KEY as string}>
                 <div style={{height: '100vh', width: '100%'}}> 

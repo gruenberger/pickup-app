@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { User } from "@prisma/client";
 import { Paper, TextField, Typography } from "@mui/material";
-import Grid from "@mui/material/Unstable_Grid2";
+import Grid from "@mui/material/Grid2";
 import SettingsComponent, { Settings } from "./SettingsComponent";
 import { auth } from "@/auth";
 
@@ -29,7 +29,7 @@ export default async function SettingsPage() {
 
         return (
             <Grid container spacing={2}>
-                <Grid xs={12} >
+                <Grid size={12} >
                 <Paper elevation={6}>
                     <SettingsComponent user={user} changeHandler={changeUserDistance} />
                 </Paper>

@@ -9,11 +9,15 @@ export const revalidate = 10;
 export default async function PickupsMap() {
     const session = await auth();
     const events: EventMapSumm[] = await getEvents(null);
-    const user = session ? session.user ? await getUser(session.user?.id) : undefined : undefined;
-     
+    const user = session?.user ? await getUser(session.user.id ?? '') : undefined;
 
     // If the user is logged in, follow this path.
-    return <MapComponent events={events} user={user ? user : undefined} />
+    if (user !== null) {
+        return <MapComponent events={events} user={user} />
+    } else {
+        // Handle the case where user is null
+        return <div>Please Log in to see the map.</div>;
+    }
 
 
 }
