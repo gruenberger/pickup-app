@@ -2,7 +2,7 @@
 
 import  { useState } from "react";
 import { Box, FormControl, InputLabel, MenuItem, Paper, Select, SelectChangeEvent, Typography } from "@mui/material";
-import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
+import Grid from '@mui/material/Grid2';
 import { APIProvider, AdvancedMarker, Pin, Map, InfoWindow } from "@vis.gl/react-google-maps";
 import { Event, User } from "@prisma/client";
 import { getEventById } from "./mapActions";
@@ -96,8 +96,8 @@ export function MapComponent({events, user}: MapComponentProps) {
     }
 
     return (
-        <Grid container>
-            <Grid xs={1}>
+        <Grid container spacing={2}>
+            <Grid size={1}>
                 <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
                     <InputLabel id="activity-filter-label">Activity</InputLabel>
                     <Select
@@ -146,11 +146,11 @@ export function MapComponent({events, user}: MapComponentProps) {
                     </LocalizationProvider>
                 </FormControl>
             </Grid>
-            <Grid xs={11}>
+            <Grid size={11}>
                 <Paper elevation={6}>                    
                 <APIProvider apiKey={process.env.NEXT_PUBLIC_GMAPS_API_KEY as string}>
                     <div style={{height: '100vh', width: '100%'}}> 
-                    <Map  zoom={16} center={center} 
+                    <Map  defaultZoom={16} defaultCenter={center} gestureHandling={'greedy'}
                         mapId={process.env.NEXT_PUBLIC_GMAPS_MAP_ID}>
                             {clientEvents && clientEvents?.map((event)=>(
                                 <AdvancedMarker key={event.id} position={{lat:event.lat,lng:event.lng}} onClick={() =>handleInfoWindow(event)}>

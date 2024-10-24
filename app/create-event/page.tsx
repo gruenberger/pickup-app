@@ -1,4 +1,4 @@
-import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
+import Grid from '@mui/material/Grid2'; // Grid version 2
 
 
 import { db } from "@/lib/db";
@@ -28,7 +28,7 @@ export default async function CreateEventPage() {
     return (
         <Box>
             <Grid container >
-                <Grid xs={12}>
+                <Grid size={12}>
                     <EventForm user={user} />
                 </Grid>
             </Grid>

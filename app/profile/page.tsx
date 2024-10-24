@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { User } from "@prisma/client";
 import { Accordion, AccordionDetails, AccordionSummary, Box, Divider, Paper, Tooltip, Typography } from "@mui/material";
-import Grid from "@mui/material/Unstable_Grid2";
+import Grid from "@mui/material/Grid2";
 import ProfileHomeSelectComponent from "./profileHomeSelectComponent";
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -38,7 +38,7 @@ export default async function Profile() {
             return(
             <Box sx={{flexGrow:1}}>
                 <Grid container spacing={2}>
-                    <Grid xs={6}>
+                    <Grid size={6}>
                         <Grid paddingBottom={1}>
                         <Paper elevation={6}>
                             <Typography variant="h4">Profile</Typography>
@@ -60,7 +60,7 @@ export default async function Profile() {
                             <GameHistoryComponent userId={user.id}  />
                         </Grid>
                         </Grid>
-                    <Grid xs={6}>
+                    <Grid size={6}>
                         <ProfileHomeSelectComponent user={user} updateLocation={updateHomeLocation}/>
                     </Grid>
                 </Grid>
